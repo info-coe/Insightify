@@ -1,0 +1,16 @@
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="jbr-17" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+  <component name="jsonEditor">
+    <option name="stateMap">
+      <map>
+        <entry key="Insightify" value="{&#10;&#9;&quot;menuData&quot;:{&#10;&#9;&#9;&quot;menuDescription&quot;:&quot;Some description about the menu based on the steps.&quot;,&#10;&#9;&#9;&quot;canSupportSpiceLevel&quot;:false,&#10;&#9;&#9;&quot;items&quot;:[&#10;&#9;&#9;&#9;{&#10;&#9;&#9;&#9;&#9;&quot;itemNumber&quot;:1,&#10;&#9;&#9;&#9;&#9;&quot;itemName&quot;:&quot;Masala Chai&quot;,&#10;&#9;&#9;&#9;&#9;&quot;itemDescription&quot;:&quot;Ingredients&quot;,&#10;&#9;&#9;&#9;&#9;&quot;spiceLevel&quot;:3,&#10;&#9;&#9;&#9;&#9;&quot;amount&quot;:2.22,&#10;&#9;&#9;&#9;&#9;&quot;GST&quot;:1.1,&#10;&#9;&#9;&#9;&#9;&quot;itemOfTheDay&quot;:true&#10;&#9;&#9;&#9;},&#10;&#9;&#9;&#9;{&#10;&#9;&#9;&#9;&#9;&quot;itemNumber&quot;:1,&#10;&#9;&#9;&#9;&#9;&quot;itemName&quot;:&quot;Masala Chai&quot;,&#10;&#9;&#9;&#9;&#9;&quot;itemDescription&quot;:&quot;Ingredients&quot;,&#10;&#9;&#9;&#9;&#9;&quot;spiceLevel&quot;:3,&#10;&#9;&#9;&#9;&#9;&quot;amount&quot;:2.22,&#10;&#9;&#9;&#9;&#9;&quot;GST&quot;:1.1,&#10;&#9;&#9;&#9;&#9;&quot;itemOfTheDay&quot;:true&#10;&#9;&#9;&#9;}&#10;&#9;&#9;]&#10;&#9;}&#10;}" />
+      </map>
+    </option>
+  </component>
+</project>
