@@ -43,6 +43,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Mic
 import androidx.compose.material.icons.rounded.AltRoute
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.AttachMoney
@@ -58,13 +59,18 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -73,19 +79,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -117,6 +126,9 @@ import com.infomerica.insightify.ui.components.placeholders.UnSupportedResolutio
 import com.infomerica.insightify.ui.composables.chatbot.generic_assistant.components.AssistantConversationMessage
 import com.infomerica.insightify.ui.composables.chatbot.generic_assistant.components.AssistantConversationMessageError
 import com.infomerica.insightify.ui.composables.chatbot.generic_assistant.components.AssistantConversationModel
+import com.infomerica.insightify.ui.composables.chatbot.generic_assistant.components.EmptyConversationPlaceHolder
+import com.infomerica.insightify.ui.composables.chatbot.generic_assistant.components.TTSBottomSheetContent
+import com.infomerica.insightify.ui.composables.chatbot.generic_assistant.components.TypingProgressPlaceHolder
 import com.infomerica.insightify.ui.composables.chatbot.generic_assistant.menu.Item
 import com.infomerica.insightify.ui.theme.InsightifyTheme
 import com.infomerica.insightify.ui.theme.poppinsFontFamily
@@ -124,6 +136,7 @@ import com.infomerica.insightify.util.CalculateWindowSize
 import com.infomerica.insightify.util.CompactThemedPreviewProvider
 import com.infomerica.insightify.util.MediumThemedPreviewProvider
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @Composable
@@ -294,6 +307,7 @@ fun GenericAssistantScreenBody(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CompactGenericAssistantScreenContent(
     paddingValues: PaddingValues,
@@ -311,7 +325,21 @@ fun CompactGenericAssistantScreenContent(
         mutableStateOf(false)
     }
 
+    var showTTSBottomSheet by remember {
+        mutableStateOf(false)
+    }
+
+    val microphoneColors = listOf(
+        MaterialTheme.colorScheme.primary,
+        MaterialTheme.colorScheme.tertiary
+    )
+
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = Unit) {
         //Adding little bit of delay for Performance
@@ -349,187 +377,42 @@ fun CompactGenericAssistantScreenContent(
         mutableStateListOf<Item>()
     }
 
-    val emptyConversationContent: @Composable () -> Unit = {
-        Column(
-            modifier = Modifier
-                .padding(
-                    horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._30sdp),
-                    vertical = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)
-                )
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Welcome to",
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._18ssp).value.sp
-            )
-            Text(
-                text = "IndoChinese Restaurant",
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._18ssp).value.sp,
-                modifier = Modifier.padding(bottom = dimensionResource(id = com.intuit.sdp.R.dimen._25sdp)),
-                style = TextStyle(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.secondary,
-                            MaterialTheme.colorScheme.tertiary,
-                            MaterialTheme.colorScheme.error
-                        )
-                    )
-                )
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .clip(MaterialTheme.shapes.large)
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .padding(dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.SentimentVerySatisfied,
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(dimensionResource(id = com.intuit.sdp.R.dimen._25sdp))
-                        .weight(.2f),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = "Our IndoChinese Restaurant is one of the finest, In NC USA.",
-                    modifier = Modifier
-                        .weight(.8f)
-                        .alpha(.8f),
-                    fontFamily = poppinsFontFamily,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .padding(vertical = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp))
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .clip(MaterialTheme.shapes.large)
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .padding(dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.AltRoute,
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(dimensionResource(id = com.intuit.sdp.R.dimen._25sdp))
-                        .weight(.2f),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = "We deliver your food, Faster than your cat.",
-                    modifier = Modifier
-                        .weight(.8f)
-                        .alpha(.8f),
-                    fontFamily = poppinsFontFamily,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .padding(bottom = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp))
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .clip(MaterialTheme.shapes.large)
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .padding(dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.AttachMoney,
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(dimensionResource(id = com.intuit.sdp.R.dimen._25sdp))
-                        .weight(.2f),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = "The cheapest and the best quality food, You ever seen. At your hands.",
-                    modifier = Modifier
-                        .weight(.8f)
-                        .alpha(.8f),
-                    fontFamily = poppinsFontFamily,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .clip(MaterialTheme.shapes.extraLarge)
-                    .background(
-                        MaterialTheme.colorScheme.surfaceContainerHigh
-                    )
-                    .padding(dimensionResource(id = com.intuit.sdp.R.dimen._10sdp))
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.hi_emoji),
-                    contentDescription = "",
-                    modifier = Modifier.size(
-                        dimensionResource(id = com.intuit.sdp.R.dimen._60sdp)
-                    )
-                )
-                Text(
-                    text = buildAnnotatedString {
-                        append("Start your conversation, By saying ")
-                        withStyle(
-                            SpanStyle(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(
-                                        MaterialTheme.colorScheme.primary,
-                                        MaterialTheme.colorScheme.secondary,
-                                        MaterialTheme.colorScheme.tertiary,
-                                        MaterialTheme.colorScheme.error
-                                    )
-                                ),
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        ) {
-                            append(
-                                "Hi to our Assistant."
-                            )
-                        }
-                    },
-                    fontFamily = poppinsFontFamily,
-                    modifier = Modifier
-                        .padding(
-                            horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp),
-                            vertical = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)
-                        ),
-                    textAlign = TextAlign.Center
-                )
-            }
-
-        }
-    }
 
     AnimatedVisibility(showLoadingDialog) {
         InstfyProgressDialog(
             title = "Remembering our old conversations ✨ ",
             description = "please wait! This may take while depends on your internet connection."
         )
+    }
+
+    if (showTTSBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showTTSBottomSheet = false },
+            sheetState = bottomSheetState,
+            shape = MaterialTheme.shapes.large,
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxHeight(.9f),
+        ) {
+            TTSBottomSheetContent(
+                onSpeechCompleted = { TTSResult ->
+                    if (TTSResult?.isNotEmpty() == true) {
+                        coroutineScope.launch {
+                            userResponse = TTSResult
+                            delay(3000L)
+                            showTTSBottomSheet = false
+                            bottomSheetState.hide()
+                        }
+                    }
+                },
+                onClose = {
+                    coroutineScope.launch {
+                        showTTSBottomSheet = false
+                    }
+                }
+            )
+        }
     }
 
     ConstraintLayout(
@@ -568,47 +451,14 @@ fun CompactGenericAssistantScreenContent(
                 index.takeIf { it == 0 }?.let {
                     when {
                         assistantResponseUiState.isLoading -> {
-                            Row(
+                            TypingProgressPlaceHolder(
                                 modifier = Modifier
                                     .padding(start = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp))
                                     .fillMaxWidth(.8f)
                                     .wrapContentHeight(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Start
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.profile_place_holder),
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .align(Alignment.Top)
-                                        .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._3sdp))
-                                        .size(
-                                            dimensionResource(id = com.intuit.sdp.R.dimen._30sdp)
-                                        )
-                                )
-                                Box(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(bottom = 10.dp, start = 10.dp)
-                                        .wrapContentHeight()
-                                        .clip(MaterialTheme.shapes.large)
-                                        .background(MaterialTheme.colorScheme.surfaceContainerHigh),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    LottieAnimation(
-                                        composition = composition,
-                                        progress = {
-                                            progress
-                                        },
-                                        modifier = Modifier
-                                            .padding(start = 15.dp, end = 15.dp)
-                                            .padding(vertical = 10.dp)
-                                            .width(50.dp)
-                                            .height(30.dp)
-                                            .scale(1.6f)
-                                    )
-                                }
-                            }
+                                lottieComposition = composition,
+                                progress = progress
+                            )
                         }
 
 
@@ -644,7 +494,7 @@ fun CompactGenericAssistantScreenContent(
             if (previousConversationUiState.emptyConversation == true) {
                 showLoadingDialog = false
                 item {
-                    emptyConversationContent()
+                    EmptyConversationPlaceHolder()
                 }
             }
         }
@@ -974,116 +824,154 @@ fun CompactGenericAssistantScreenContent(
             }
             AnimatedVisibility(visible = selectedItems.isEmpty()) {
                 Row(
-                    modifier = Modifier
-                        .padding(
-                            horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._18sdp)
-                        )
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .clip(MaterialTheme.shapes.extraLarge)
-                        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                        .animateContentSize(
-                            animationSpec = tween(
-                                500
-                            )
-                        ),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp, alignment = Alignment.End)
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    AnimatedVisibility(
-                        visible = userResponse.isNotEmpty()
-                    ) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.cancel),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .weight(.2f)
-                                .padding(start = dimensionResource(id = com.intuit.sdp.R.dimen._12sdp))
-                                .size(dimensionResource(id = com.intuit.sdp.R.dimen._18sdp))
-                                .clickable {
-                                    userResponse = ""
-                                },
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                    TextField(
+                    Row(
                         modifier = Modifier
-                            .weight(.6f)
-                            .padding(vertical = 5.dp)
-                            .wrapContentHeight()
-                            .verticalScroll(state = rememberScrollState()),
-                        value = userResponse,
-                        textStyle = TextStyle(
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontSize = 16.sp,
-                            lineHeight = 24.sp,
-                            letterSpacing = 0.5.sp,
-                            fontFamily = poppinsFontFamily,
-                            fontWeight = FontWeight.Medium,
-                            fontStyle = FontStyle.Normal,
-                        ),
-                        keyboardOptions = KeyboardOptions(
-                            autoCorrect = true,
-                        ),
-                        maxLines = 6,
-                        onValueChange = {
-                            userResponse = it
-                        },
-                        placeholder = {
-                            Text(
-                                text = "Type your response.",
-                                fontFamily = poppinsFontFamily,
-                                fontWeight = FontWeight.Light,
-                                modifier = Modifier.alpha(.8f),
-                                fontSize = 16.sp
+                            .padding(
+                                start = dimensionResource(id = com.intuit.sdp.R.dimen._18sdp)
                             )
-                        },
-                        colors = TextFieldDefaults.colors(
-                            cursorColor = MaterialTheme.colorScheme.primary,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurface
-                        ),
-                    )
-                    IconButton(
-                        onClick = {
-                            if (userResponse.isNotEmpty()) {
-                                //Execute Query
-                                onAssistantEvent(
-                                    AssistantEvent.AddMessageToConversation(
-                                        AssistantConversationModel(
-                                            message = userResponse,
-                                            isFromUser = true
+                            .fillMaxWidth(.8f)
+                            .wrapContentHeight()
+                            .clip(MaterialTheme.shapes.extraLarge)
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                            .animateContentSize(
+                                animationSpec = tween(
+                                    500
+                                )
+                            ),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(
+                            10.dp,
+                            alignment = Alignment.End
+                        )
+                    ) {
+                        AnimatedVisibility(
+                            visible = userResponse.isNotEmpty()
+                        ) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.cancel),
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .weight(.2f)
+                                    .padding(start = dimensionResource(id = com.intuit.sdp.R.dimen._12sdp))
+                                    .size(dimensionResource(id = com.intuit.sdp.R.dimen._18sdp))
+                                    .clickable {
+                                        userResponse = ""
+                                    },
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                        TextField(
+                            modifier = Modifier
+                                .weight(.6f)
+                                .padding(vertical = 5.dp)
+                                .wrapContentHeight()
+                                .verticalScroll(state = rememberScrollState()),
+                            value = userResponse,
+                            textStyle = TextStyle(
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontSize = 16.sp,
+                                lineHeight = 24.sp,
+                                letterSpacing = 0.5.sp,
+                                fontFamily = poppinsFontFamily,
+                                fontWeight = FontWeight.Medium,
+                                fontStyle = FontStyle.Normal,
+                            ),
+                            keyboardOptions = KeyboardOptions(
+                                autoCorrect = true,
+                            ),
+                            maxLines = 6,
+                            onValueChange = {
+                                userResponse = it
+                            },
+                            placeholder = {
+                                Text(
+                                    text = "Type your response.",
+                                    fontFamily = poppinsFontFamily,
+                                    fontWeight = FontWeight.Light,
+                                    modifier = Modifier.alpha(.8f),
+                                    fontSize = 16.sp
+                                )
+                            },
+                            colors = TextFieldDefaults.colors(
+                                cursorColor = MaterialTheme.colorScheme.primary,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurface
+                            ),
+                        )
+                        IconButton(
+                            onClick = {
+                                if (userResponse.isNotEmpty()) {
+                                    //Execute Query
+                                    onAssistantEvent(
+                                        AssistantEvent.AddMessageToConversation(
+                                            AssistantConversationModel(
+                                                message = userResponse,
+                                                isFromUser = true
+                                            )
                                         )
                                     )
-                                )
-                                onAssistantEvent(
-                                    AssistantEvent.GetResponseFromAssistant(
-                                        userResponse
+                                    onAssistantEvent(
+                                        AssistantEvent.GetResponseFromAssistant(
+                                            userResponse
+                                        )
                                     )
-                                )
-                                userResponse = ""
-                            }
-                        },
-                        modifier = Modifier
-                            .weight(.2f)
-                            .clip(CircleShape)
-                            .size(
-                                dimensionResource(id = com.intuit.sdp.R.dimen._40sdp)
-                            ),
-                    ) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.send),
-                            contentDescription = "",
+                                    userResponse = ""
+                                }
+                            },
                             modifier = Modifier
-                                .minimumInteractiveComponentSize()
+                                .weight(.2f)
+                                .clip(CircleShape)
                                 .size(
-                                    dimensionResource(id = com.intuit.sdp.R.dimen._18sdp)
+                                    dimensionResource(id = com.intuit.sdp.R.dimen._40sdp)
                                 ),
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
+                        ) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.send),
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .minimumInteractiveComponentSize()
+                                    .size(
+                                        dimensionResource(id = com.intuit.sdp.R.dimen._18sdp)
+                                    ),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IconButton(
+                            onClick = {
+                                showTTSBottomSheet = !showTTSBottomSheet
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Mic,
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .size(dimensionResource(id = com.intuit.sdp.R.dimen._25sdp))
+                                    .graphicsLayer(alpha = 0.99f)
+                                    .drawWithCache {
+                                        onDrawWithContent {
+                                            drawContent()
+                                            drawRect(
+                                                Brush.horizontalGradient(
+                                                    microphoneColors
+                                                ),
+                                                blendMode = BlendMode.SrcAtop
+                                            )
+                                        }
+                                    },
+                            )
+                        }
                     }
                 }
             }
@@ -1668,7 +1556,7 @@ fun MediumGenericAssistantScreenContent(
                                         onClick = { customizationText = "" },
                                         modifier = Modifier
                                             .padding(start = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp))
-                                        ) {
+                                    ) {
                                         Icon(
                                             imageVector = ImageVector.vectorResource(R.drawable.cancel),
                                             contentDescription = "",
