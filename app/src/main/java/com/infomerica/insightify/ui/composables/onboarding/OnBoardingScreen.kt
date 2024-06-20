@@ -1,9 +1,6 @@
 package com.infomerica.insightify.ui.composables.onboarding
 
-import android.app.Activity
-import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -11,6 +8,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,17 +18,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -38,9 +31,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -242,14 +232,14 @@ private fun OnBoardingScreenTabletContent(
             contentDescription = "Welcome Image",
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp))
+                .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._60sdp))
                 .weight(.5f)
         )
         Column(
             modifier = Modifier
                 .weight(.5f),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = buildAnnotatedString {
@@ -280,8 +270,8 @@ private fun OnBoardingScreenTabletContent(
                         top = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp)
                     ),
                 textAlign = TextAlign.Center,
-                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._18ssp).value.sp,
-                lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._24ssp).value.sp
+                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp,
+                lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._20ssp).value.sp
             )
             Text(
                 text = buildAnnotatedString {
@@ -308,26 +298,27 @@ private fun OnBoardingScreenTabletContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp))
-                    .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)),
+                    .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)),
                 textAlign = TextAlign.Center,
-                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp,
-                lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._20ssp).value.sp
+                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp,
+                lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._18ssp).value.sp
             )
             Button(
                 onClick = { navController.navigate(OnBoardingScreens.LoginScreen.route) },
                 modifier = Modifier
                     .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._25sdp))
                     .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._30sdp))
-                    .height(dimensionResource(id = com.intuit.sdp.R.dimen._40sdp))
+                    .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._60sdp))
+                    .height(dimensionResource(id = com.intuit.sdp.R.dimen._35sdp))
             ) {
                 Text(
                     text = "Get started",
                     fontFamily = poppinsFontFamily,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp
+                    fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp
                 )
             }
+
         }
     }
 }

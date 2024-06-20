@@ -16,10 +16,7 @@ sealed interface HomeSpec {
     companion object {
         val allScreens = listOf(
             HomeScreenSpec,
-            ConversationScreenSpec,
             GenericAssistantScreenSpec,
-            RecentConversationScreenSpec,
-            RecentConversationListScreenSpec,
             RecentOrderScreenSpec,
             RecentOrderReviewScreenSpec,
             AboutUsScreenSpec

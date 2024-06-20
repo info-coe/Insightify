@@ -2,6 +2,7 @@ package com.infomerica.insightify.ui.navigation.profile
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
@@ -12,7 +13,9 @@ sealed interface ProfileSpec {
 
     companion object {
         val allScreens = listOf(
-            ProfileScreenSpec
+            ProfileScreenSpec,
+            SettingsScreenSpec,
+            ThreadsScreenSpec
         )
     }
 
@@ -27,7 +30,8 @@ sealed interface ProfileSpec {
     @Composable
     fun Content(
         navController: NavController,
-        navBackStackEntry: NavBackStackEntry
+        navBackStackEntry: NavBackStackEntry,
+        windowWidthSizeClass: WindowWidthSizeClass
     )
 
     fun enterTransition() : EnterTransition

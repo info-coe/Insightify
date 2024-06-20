@@ -8,7 +8,6 @@ import com.aallam.openai.api.chat.ChatCompletion
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
-import com.aallam.openai.api.core.RequestOptions
 import com.aallam.openai.api.core.Role
 import com.aallam.openai.api.core.Status
 import com.aallam.openai.api.http.Timeout
@@ -21,7 +20,7 @@ import com.aallam.openai.api.thread.ThreadId
 import com.aallam.openai.client.OpenAI
 import com.aallam.openai.client.OpenAIHost
 import com.aallam.openai.client.RetryStrategy
-import com.infomerica.insightify.ui.composables.chatbot.generic_assistant.components.AssistantConversationModel
+import com.infomerica.insightify.ui.composables.generic_assistant.AssistantConversationModel
 import com.infomerica.insightify.util.Constants
 import com.infomerica.insightify.util.Constants.GPT_MODEL
 import com.infomerica.insightify.util.Resource
@@ -32,7 +31,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.lang.Exception
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
@@ -80,18 +78,14 @@ class OpenAiManager @Inject constructor() {
         assistant = openAI.assistant(
             id = AssistantId(assistantID),
             request = AssistantRequest(
-                model = ModelId("gpt-4-turbo"),
                 instructions = Constants.OPEN_AI_INSTRUCTIONS
-            ),
-            requestOptions = RequestOptions(
-                
             )
         )
         thread = openAI.thread(ThreadId(id = threadID))
         assistant?.let { assistant: Assistant ->
             Timber
                 .tag(ASSISTANT_MANAGER)
-                .i("assistant Created")
+                .i("assistant Created - with name ${assistant.name}")
             Timber
                 .tag(ASSISTANT_MANAGER)
                 .i("Assistant Initialized with ID : ${thread?.id?.id}")

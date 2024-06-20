@@ -2,4 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="red">#FA2020</color>
+    <color name="start_gradient">#F86262</color>
+    <color name="middle_gradient">#64B986</color>
+    <color name="end_gradient">#D36363</color>
 </resources>

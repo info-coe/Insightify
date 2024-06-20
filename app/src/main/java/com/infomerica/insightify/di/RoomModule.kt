@@ -3,7 +3,6 @@ package com.infomerica.insightify.di
 import android.content.Context
 import androidx.room.Room
 import com.infomerica.insightify.db.InsightifyDatabase
-import com.infomerica.insightify.db.dao.RecentSessionDao
 import com.infomerica.insightify.db.dao.UserConfigurationDao
 import com.infomerica.insightify.db.dao.UserMetaDataDao
 import com.infomerica.insightify.db.dao.UserProfileDao
@@ -54,13 +53,6 @@ object RoomModule {
         return insightifyDatabase.userMetaDataDao()
     }
 
-    @Provides
-    @Singleton
-    fun provideRecentSessionDao(
-        insightifyDatabase: InsightifyDatabase
-    ) : RecentSessionDao {
-        return insightifyDatabase.recentSessionDao()
-    }
 
 
 }

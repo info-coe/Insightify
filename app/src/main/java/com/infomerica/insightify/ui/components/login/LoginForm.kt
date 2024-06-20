@@ -42,15 +42,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.infomerica.insightify.ui.theme.poppinsFontFamily
 import com.infomerica.insightify.util.CompactThemedPreviewProvider
 import com.infomerica.insightify.util.MediumThemedPreviewProvider
-import com.intuit.ssp.R
 import com.intuit.sdp.R.dimen
+import com.intuit.ssp.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -337,8 +335,8 @@ fun MediumLoginForm(
 
     Column(
         modifier = Modifier
-            .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._15sdp))
-            .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._25sdp))
+            .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp))
+            .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._30sdp))
             .fillMaxWidth()
             .wrapContentHeight(),
         horizontalAlignment = Alignment.Start
@@ -347,7 +345,7 @@ fun MediumLoginForm(
             text = "Sign In with Email.",
             fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.SemiBold,
-            fontSize = dimensionResource(id = R.dimen._14ssp).value.sp,
+            fontSize = dimensionResource(id = R.dimen._10ssp).value.sp,
             modifier = Modifier
                 .fillMaxWidth()
                 .alpha(.9f)
@@ -373,14 +371,14 @@ fun MediumLoginForm(
                 Text(
                     text = "Email",
                     fontFamily = poppinsFontFamily,
-                    fontSize = dimensionResource(id = R.dimen._13ssp).value.sp
+                    fontSize = dimensionResource(id = R.dimen._8ssp).value.sp
                 )
             },
             shape = CircleShape,
             modifier = Modifier
-                .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._12sdp))
+                .padding(top = dimensionResource(id = dimen._8sdp))
                 .fillMaxWidth()
-                .height(dimensionResource(id = com.intuit.sdp.R.dimen._50sdp)),
+                .height(dimensionResource(id = com.intuit.sdp.R.dimen._40sdp)),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
@@ -405,7 +403,7 @@ fun MediumLoginForm(
             textStyle = TextStyle(
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Normal,
-                fontSize = dimensionResource(id = R.dimen._14ssp).value.sp
+                fontSize = dimensionResource(id = R.dimen._12ssp).value.sp
             )
         )
 
@@ -430,7 +428,7 @@ fun MediumLoginForm(
                 Text(
                     text = "Password",
                     fontFamily = poppinsFontFamily,
-                    fontSize = dimensionResource(id = R.dimen._12ssp).value.sp
+                    fontSize = dimensionResource(id = R.dimen._8ssp).value.sp
                 )
             },
             trailingIcon = {
@@ -452,7 +450,7 @@ fun MediumLoginForm(
             modifier = Modifier
                 .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._8sdp))
                 .fillMaxWidth()
-                .height(dimensionResource(id = com.intuit.sdp.R.dimen._50sdp)),
+                .height(dimensionResource(id = com.intuit.sdp.R.dimen._40sdp)),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
@@ -465,7 +463,7 @@ fun MediumLoginForm(
             textStyle = TextStyle(
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Normal,
-                fontSize = dimensionResource(id = R.dimen._14ssp).value.sp
+                fontSize = dimensionResource(id = R.dimen._12ssp).value.sp
             ),
             visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
             isError = passwordTextFiledError,
@@ -520,17 +518,17 @@ fun MediumLoginForm(
                 }
             },
             modifier = Modifier
-                .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp))
+                .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp))
                 .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._36sdp))
                 .fillMaxWidth()
-                .height(dimensionResource(id = com.intuit.sdp.R.dimen._44sdp))
+                .height(dimensionResource(id = com.intuit.sdp.R.dimen._35sdp))
                 .focusRequester(focusRequester)
         ) {
             Text(
                 text = "Login",
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Medium,
-                fontSize = dimensionResource(id = R.dimen._12ssp).value.sp
+                fontSize = dimensionResource(id = R.dimen._10ssp).value.sp
             )
         }
     }

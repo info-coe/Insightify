@@ -30,6 +30,7 @@ import com.infomerica.insightify.util.CompactThemedPreviewProvider
 
 @Composable
 fun InstfyAlertDialog(
+    modifier: Modifier = Modifier,
     title: String = "",
     description: String = "",
     positiveText : String = "",
@@ -51,7 +52,8 @@ fun InstfyAlertDialog(
                 .fillMaxWidth(.9f)
                 .wrapContentHeight()
                 .clip(MaterialTheme.shapes.extraLarge)
-                .background(MaterialTheme.colorScheme.surfaceContainer),
+                .background(MaterialTheme.colorScheme.surfaceContainer)
+                .then(modifier),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(

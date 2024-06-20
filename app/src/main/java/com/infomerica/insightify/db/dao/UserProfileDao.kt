@@ -7,7 +7,6 @@ import androidx.room.Query
 import androidx.room.Update
 import com.infomerica.insightify.db.entites.UserProfileEntity
 import kotlinx.coroutines.flow.Flow
-import kotlin.jvm.Throws
 
 @Dao
 interface UserProfileDao {

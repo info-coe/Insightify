@@ -5,6 +5,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -13,11 +14,8 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
-import com.infomerica.insightify.ui.composables.downloads.DownloadsScreen
 import com.infomerica.insightify.ui.composables.profile.ProfileScreen
 import com.infomerica.insightify.ui.composables.profile.ProfileViewModel
-import com.infomerica.insightify.ui.navigation.profile.ProfileScreens
-import com.infomerica.insightify.ui.navigation.profile.ProfileSpec
 
 data object ProfileScreenSpec : ProfileSpec {
     override val route: String
@@ -33,7 +31,8 @@ data object ProfileScreenSpec : ProfileSpec {
     @Composable
     override fun Content(
         navController: NavController,
-        navBackStackEntry: NavBackStackEntry
+        navBackStackEntry: NavBackStackEntry,
+        windowWidthSizeClass: WindowWidthSizeClass,
     ) {
         val profileViewModel: ProfileViewModel = hiltViewModel()
         val userProfileUiState by profileViewModel.recentOrderUiState.collectAsStateWithLifecycle()

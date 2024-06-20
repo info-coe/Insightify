@@ -48,10 +48,8 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.auth.api.identity.Identity
 import com.infomerica.insightify.extension.makeToast
-import com.infomerica.insightify.ui.theme.InsightifyTheme
 import com.infomerica.insightify.manager.PreferencesManager
 import com.infomerica.insightify.ui.components.dialog.InstfyProgressDialog
-import com.infomerica.insightify.ui.components.login.CompactLoginDivider
 import com.infomerica.insightify.ui.components.login.CompactLoginForm
 import com.infomerica.insightify.ui.components.login.CompactSignInOptions
 import com.infomerica.insightify.ui.components.login.MediumLoginDivider
@@ -62,6 +60,7 @@ import com.infomerica.insightify.ui.composables.login.google_sign_in.GoogleAuthU
 import com.infomerica.insightify.ui.composables.login.google_sign_in.UserProfileDto
 import com.infomerica.insightify.ui.navigation.Graphs
 import com.infomerica.insightify.ui.navigation.on_boarding.OnBoardingScreens
+import com.infomerica.insightify.ui.theme.InsightifyTheme
 import com.infomerica.insightify.ui.theme.poppinsFontFamily
 import com.infomerica.insightify.util.CompactThemedPreviewProvider
 import com.infomerica.insightify.util.Constants
@@ -434,7 +433,8 @@ private fun MediumLoginScreenContent(
             .fillMaxWidth()
             .fillMaxHeight()
             .padding(paddingValues),
-        verticalArrangement = Arrangement.Top
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         stickyHeader {
             Text(
@@ -451,7 +451,7 @@ private fun MediumLoginScreenContent(
                 },
                 color = MaterialTheme.colorScheme.onSurface,
                 fontFamily = poppinsFontFamily,
-                fontSize = dimensionResource(id = R.dimen._22ssp).value.sp,
+                fontSize = dimensionResource(id = R.dimen._16ssp).value.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.surface)
@@ -461,7 +461,7 @@ private fun MediumLoginScreenContent(
                         bottom = dimensionResource(id = com.intuit.sdp.R.dimen._8sdp),
                     )
                     .fillMaxWidth(),
-                lineHeight = dimensionResource(id = R.dimen._27ssp).value.sp,
+                lineHeight = dimensionResource(id = R.dimen._22ssp).value.sp,
                 letterSpacing = 1.sp
             )
         }
@@ -514,9 +514,9 @@ private fun MediumLoginScreenContent(
                     ),
                 textAlign = TextAlign.Center,
                 fontFamily = poppinsFontFamily,
-                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp,
+                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._8ssp).value.sp,
                 fontWeight = FontWeight.Light,
-                lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._20ssp).value.sp
+                lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp
             )
         }
     }

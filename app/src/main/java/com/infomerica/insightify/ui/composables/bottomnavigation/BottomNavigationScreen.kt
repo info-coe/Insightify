@@ -1,25 +1,18 @@
 package com.infomerica.insightify.ui.composables.bottomnavigation
 
 
-import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -62,7 +55,7 @@ fun BottomNavigationScreen(
     windowWidthSizeClass: WindowWidthSizeClass
 ) {
     val bottomNavController = rememberNavController()
-    BottomNavigationBody(bottomNavController,windowWidthSizeClass) {
+    BottomNavigationBody(bottomNavController, windowWidthSizeClass) {
         NavigationScreenContent(it, windowWidthSizeClass, bottomNavController)
     }
 }
@@ -107,38 +100,38 @@ private fun BottomNavigationBody(
                     visible = canShownBottomBar,
                     enter = fadeIn(tween(700)) + expandIn(tween(500), clip = true)
                 ) {
-                        NavigationBar {
-                            navigationItems.forEachIndexed { index, item ->
-                                NavigationBarItem(
-                                    selected = item.route == navDestination?.route,
-                                    icon = {
-                                        Icon(
-                                            if (index == selectedNavigationItem) item.selectedIcon else item.unSelectedIcon,
-                                            contentDescription = item.name,
-                                            tint = MaterialTheme.colorScheme.onSurface,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                    },
-                                    label = {
-                                        Text(
-                                            item.name,
-                                            fontFamily = poppinsFontFamily
-                                        )
-                                    },
-                                    onClick = {
-                                        selectedNavigationItem = index
-                                        navController.navigate(item.route) {
-                                            popUpTo(navController.graph.findStartDestination().id) {
-                                                saveState = true
-                                            }
-                                            launchSingleTop = true
-                                            restoreState = true
+                    NavigationBar {
+                        navigationItems.forEachIndexed { index, item ->
+                            NavigationBarItem(
+                                selected = item.route == navDestination?.route,
+                                icon = {
+                                    Icon(
+                                        if (index == selectedNavigationItem) item.selectedIcon else item.unSelectedIcon,
+                                        contentDescription = item.name,
+                                        tint = MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        item.name,
+                                        fontFamily = poppinsFontFamily
+                                    )
+                                },
+                                onClick = {
+                                    selectedNavigationItem = index
+                                    navController.navigate(item.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
                                         }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                )
-                            }
+                                }
+                            )
                         }
                     }
+                }
             },
             content = content
         )
@@ -151,7 +144,7 @@ private fun NavigationScreenContent(
     windowWidthSizeClass: WindowWidthSizeClass,
     bottomNavController: NavHostController
 ) {
-    val sharedViewModel : SharedViewModel = hiltViewModel()
+    val sharedViewModel: SharedViewModel = hiltViewModel()
     val homeViewModel: HomeViewModel = hiltViewModel()
     NavHost(
         navController = bottomNavController,
@@ -161,7 +154,7 @@ private fun NavigationScreenContent(
     ) {
         homeGraph(bottomNavController, homeViewModel, sharedViewModel, windowWidthSizeClass)
         downloadsGraph(bottomNavController)
-        profileGraph(bottomNavController)
+        profileGraph(bottomNavController,windowWidthSizeClass)
     }
 }
 
@@ -181,7 +174,13 @@ fun NavGraphBuilder.homeGraph(
                 arguments = homeScreenSpec.arguments,
                 deepLinks = homeScreenSpec.deepLinks
             ) {
-                homeScreenSpec.Content(navController, it, homeViewModel, sharedViewModel,windowWidthSizeClass)
+                homeScreenSpec.Content(
+                    navController,
+                    it,
+                    homeViewModel,
+                    sharedViewModel,
+                    windowWidthSizeClass
+                )
             }
         }
     }
@@ -205,7 +204,10 @@ fun NavGraphBuilder.downloadsGraph(navController: NavController) {
     }
 }
 
-fun NavGraphBuilder.profileGraph(navController: NavController) {
+fun NavGraphBuilder.profileGraph(
+    navController: NavController,
+    windowWidthSizeClass: WindowWidthSizeClass
+) {
     navigation(
         route = Graphs.PROFILE_GRAPH,
         startDestination = ProfileScreens.ProfileScreen.route
@@ -216,7 +218,8 @@ fun NavGraphBuilder.profileGraph(navController: NavController) {
             ) {
                 profileScreenSpec.Content(
                     navController = navController,
-                    navBackStackEntry = it
+                    navBackStackEntry = it,
+                    windowWidthSizeClass
                 )
             }
         }

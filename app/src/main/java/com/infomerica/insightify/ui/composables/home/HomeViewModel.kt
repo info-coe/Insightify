@@ -3,28 +3,16 @@ package com.infomerica.insightify.ui.composables.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.SetOptions
-import com.infomerica.insightify.db.dao.RecentSessionDao
 import com.infomerica.insightify.db.dao.UserConfigurationDao
 import com.infomerica.insightify.db.dao.UserMetaDataDao
 import com.infomerica.insightify.db.dao.UserProfileDao
-import com.infomerica.insightify.db.entites.RecentSessionEntity
 import com.infomerica.insightify.db.entites.UserProfileEntity
 import com.infomerica.insightify.db.entites.toUserConfigurationDto
 import com.infomerica.insightify.db.entites.toUserProfileDto
-import com.infomerica.insightify.ui.composables.home.recentsessions.RecentSessionModel
 import com.infomerica.insightify.ui.composables.login.google_sign_in.UserMetaData
 import com.infomerica.insightify.ui.composables.login.google_sign_in.UserMetaDataDto
 import com.infomerica.insightify.ui.composables.login.google_sign_in.toUserMetaDataDto
 import com.infomerica.insightify.util.Constants
-import com.infomerica.insightify.util.Constants.LAST_SEEN
-import com.infomerica.insightify.util.Constants.SERVER_TIME_STAMP
-import com.infomerica.insightify.util.Constants.SESSION_ID
-import com.infomerica.insightify.util.Constants.STARRED
-import com.infomerica.insightify.util.Constants.TITLE
-import com.infomerica.insightify.util.Constants.UNABLE_TO_UPDATE_FAVOURITE
-import com.infomerica.insightify.util.Constants.cancellationExceptionErrorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -46,7 +34,6 @@ class HomeViewModel @Inject constructor(
     private val fireStore: FirebaseFirestore,
     private val userProfileDao: UserProfileDao,
     private val userConfigurationDao: UserConfigurationDao,
-    private val recentSessionDao: RecentSessionDao,
     private val userMetaDataDao: UserMetaDataDao,
 ) : ViewModel() {
 
@@ -61,15 +48,6 @@ class HomeViewModel @Inject constructor(
     val userProfileUiState: StateFlow<UserProfileUiState> =
         mutableUserProfileUiState.asStateFlow()
 
-    private val mutableRecentSessionUiState: MutableStateFlow<RecentSessionUiState> =
-        MutableStateFlow(RecentSessionUiState())
-    val recentSessionUiState: StateFlow<RecentSessionUiState> =
-        mutableRecentSessionUiState.asStateFlow()
-
-    private val mutableRecentSessionFavouriteUiState: MutableStateFlow<RecentSessionFavouriteUiState> =
-        MutableStateFlow(RecentSessionFavouriteUiState())
-    val recentSessionFavouriteUiState: StateFlow<RecentSessionFavouriteUiState> =
-        mutableRecentSessionFavouriteUiState.asStateFlow()
 
 
     init {
@@ -89,8 +67,6 @@ class HomeViewModel @Inject constructor(
     fun onTriggerEvent(event: HomeEvent) {
         when (event) {
             is HomeEvent.FetchUserConfigurationFromRoom -> fetchUserConfigurationFromRoom()
-            is HomeEvent.FetchRecentSessionDataFromRoom -> saveRecentSessionToRoom()
-            is HomeEvent.UpdateFavouriteToFirebase -> updateFavouriteToFirebase(event.sessionId)
             is HomeEvent.FetchUserProfileFromRoom -> fetchUserProfileFromRoom()
         }
     }
@@ -107,143 +83,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Used to update the Fav/Starred for RecentSessions
-     * @param sessionId the session Id for conversation.
-     */
-    private fun updateFavouriteToFirebase(sessionId: String) {
-        mutableRecentSessionFavouriteUiState.update {
-            it.copy(isUpdating = true)
-        }
-        viewModelScope.launch(exceptionHandler) {
-            try {
-                val userProfileEntity = fetchUserProfile()
-                userProfileEntity.takeIf { it != null }?.let { userProfile ->
-                    userProfile.email?.takeIf { it.isNotEmpty() }?.let { email ->
-                        fireStore
-                            .collection(Constants.RecentSessionPath.USERS.name)
-                            .document(email)
-                            .collection(Constants.RecentSessionPath.CONVERSATIONS.name)
-                            .document(sessionId)
-                            .set(mapOf(STARRED to true), SetOptions.merge())
-                            .await()
-                        mutableRecentSessionFavouriteUiState.update {
-                            it.copy(isUpdating = false, updatedSuccessfully = true)
-                        }
-                    } ?: run {
-                        mutableRecentSessionFavouriteUiState.update {
-                            it.copy(isUpdating = false, error = UNABLE_TO_UPDATE_FAVOURITE)
-                        }
-                    }
-                } ?: run {
-                    mutableRecentSessionFavouriteUiState.update {
-                        it.copy(isUpdating = false, error = UNABLE_TO_UPDATE_FAVOURITE)
-                    }
-                }
-            } catch (e: CancellationException) {
-                mutableRecentSessionFavouriteUiState.update {
-                    it.copy(isUpdating = false, error = UNABLE_TO_UPDATE_FAVOURITE)
-                }
-                Timber.tag(HOME_VM_EXCEPTION)
-                    .i(e, message = cancellationExceptionErrorMessage("UpdateFavToFirebase"))
-                throw e
-            }
-        }
-    }
-
-    private suspend fun getRecentSessionDataFromFirebase(): List<RecentSessionModel> =
-        withContext(Dispatchers.IO) {
-            val userProfileEntity = fetchUserProfile()
-            val recentSessionsList: MutableList<RecentSessionModel> = mutableListOf()
-
-            userProfileEntity?.email?.takeIf { it.isNotEmpty() }?.let { email ->
-                val querySnapshot = fireStore
-                    .collection(Constants.RecentSessionPath.USERS.name)
-                    .document(email)
-                    .collection(Constants.RecentSessionPath.CONVERSATIONS.name)
-                    .orderBy(SERVER_TIME_STAMP, Query.Direction.DESCENDING)
-                    .get()
-                    .await()
-
-                querySnapshot?.takeIf { it.documents.isNotEmpty() }?.let { snapshot ->
-                    recentSessionsList.clear()
-                    for (documentSnapshot in snapshot.documents) {
-                        documentSnapshot.get(TITLE, String::class.java)?.let { title ->
-                            documentSnapshot.get(STARRED, Boolean::class.java)?.let { starred ->
-                                documentSnapshot.get(LAST_SEEN, String::class.java)
-                                    ?.let { lastSeen ->
-                                        documentSnapshot.get(SESSION_ID, String::class.java)
-                                            ?.let { sessionId ->
-                                                recentSessionsList.add(
-                                                    RecentSessionModel(
-                                                        title,
-                                                        lastSeen,
-                                                        starred,
-                                                        sessionId
-                                                    )
-                                                )
-                                            }
-                                    }
-                            }
-                        }
-                    }
-                }
-            }
-            recentSessionsList
-        }
-
-    private fun saveRecentSessionToRoom() {
-        viewModelScope.launch(exceptionHandler) {
-            mutableRecentSessionUiState.update {
-                it.copy(
-                    isLoading = true
-                )
-            }
-            try {
-                getRecentSessionDataFromFirebase().let { recentSessionModels ->
-                    withContext(Dispatchers.IO) {
-                        recentSessionModels.forEach { recentSessionModel ->
-                            recentSessionDao.saveRecentSessionData(
-                                recentSessionEntity = RecentSessionEntity(
-                                    id = recentSessionModel.sessionId,
-                                    title = recentSessionModel.title,
-                                    lastSeen = recentSessionModel.lastSeen,
-                                    starred = recentSessionModel.starred,
-                                    conversation = recentSessionModel.conversation
-                                )
-                            )
-                        }
-                    }
-                    mutableRecentSessionUiState.update {
-                        it.copy(
-                            isLoading = false,
-                            recentSessions = recentSessionModels
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                if (e is CancellationException) {
-                    mutableRecentSessionUiState.update {
-                        it.copy(
-                            isLoading = false,
-                            error = "Unable to get Recent session."
-                        )
-                    }
-                    Timber.tag(HOME_VM_EXCEPTION)
-                        .i(e, message = cancellationExceptionErrorMessage("UpdateFavToFirebase"))
-                    throw e
-                } else {
-                    Timber.tag(HOME_VM_EXCEPTION).i(e)
-                    mutableRecentSessionUiState.update {
-                        it.copy(
-                            isLoading = false,
-                            error = "Unable to get Recent session."
-                        )
-                    }
-                }
-            }
-        }
-    }
 
     private suspend fun getProfileMetaDataFromFirebase(
         email: String,

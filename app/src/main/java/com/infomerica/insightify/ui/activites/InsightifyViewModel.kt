@@ -3,14 +3,12 @@ package com.infomerica.insightify.ui.activites
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aallam.openai.api.BetaOpenAI
 import com.google.firebase.database.DatabaseReference
 import com.infomerica.insightify.manager.OpenAiManager
 import com.infomerica.insightify.util.Constants.APP_DATA
 import com.infomerica.insightify.util.Constants.OPEN_AI_API_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber

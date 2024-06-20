@@ -11,7 +11,6 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
 import com.infomerica.insightify.ui.composables.downloads.DownloadsScreen
-import com.infomerica.insightify.ui.navigation.profile.ProfileScreens
 
 data object DownloadsScreenSpec : DownloadsSpec {
     override val route: String

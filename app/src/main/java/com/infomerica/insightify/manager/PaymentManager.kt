@@ -1,14 +1,10 @@
 package com.infomerica.insightify.manager
 
 import android.app.Activity
-import android.content.Context
 import dev.shreyaspatil.easyupipayment.EasyUpiPayment
 import dev.shreyaspatil.easyupipayment.exception.AppNotFoundException
 import dev.shreyaspatil.easyupipayment.listener.PaymentStatusListener
 import dev.shreyaspatil.easyupipayment.model.PaymentApp
-import dev.shreyaspatil.easyupipayment.model.TransactionDetails
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.catch
 import javax.inject.Inject
 
 class PaymentManager @Inject constructor() {

@@ -1,5 +1,7 @@
 package com.infomerica.insightify.ui.navigation.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.slideInHorizontally
@@ -15,8 +17,8 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
-import com.infomerica.insightify.ui.composables.chatbot.generic_assistant.AssistantViewModel
-import com.infomerica.insightify.ui.composables.chatbot.generic_assistant.GenericAssistantScreen
+import com.infomerica.insightify.ui.composables.generic_assistant.AssistantViewModel
+import com.infomerica.insightify.ui.composables.generic_assistant.GenericAssistantScreen
 import com.infomerica.insightify.ui.composables.home.HomeViewModel
 import com.infomerica.insightify.ui.composables.shared.SharedViewModel
 import timber.log.Timber
@@ -53,6 +55,7 @@ data object GenericAssistantScreenSpec : HomeSpec {
         val assistantResponseUiState by assistantViewModel.assistantResponseUiState.collectAsStateWithLifecycle()
         val previousConversationUiState by assistantViewModel.previousConversationUiState.collectAsStateWithLifecycle()
         val assistantConversationUiState by assistantViewModel.conversationUiState.collectAsStateWithLifecycle()
+        val deleteConversationUiState by assistantViewModel.conversationDeletionUiState.collectAsStateWithLifecycle()
         LaunchedEffect(key1 = assistantConversationUiState) {
             Timber
                 .tag("TEST")
@@ -62,6 +65,7 @@ data object GenericAssistantScreenSpec : HomeSpec {
             navController = navController,
             assistantResponseUiState,
             previousConversationUiState,
+            deleteConversationUiState,
             assistantConversationUiState,
             windowWidthSizeClass,
             onAssistantEvent = { assistantEvent ->

@@ -1,7 +1,6 @@
 package com.infomerica.insightify.ui.composables.recentOrderRating
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -58,7 +57,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.infomerica.insightify.R
 import com.infomerica.insightify.ui.theme.InsightifyTheme
 import com.infomerica.insightify.ui.theme.poppinsFontFamily
 import timber.log.Timber

@@ -37,18 +37,7 @@ data object HomeScreenSpec : HomeSpec {
         windowWidthSizeClass: WindowWidthSizeClass
     ) {
         val userConfigurationUiState by homeViewModel.userConfigurationUiState.collectAsStateWithLifecycle()
-        val recentSessionUiState by homeViewModel.recentSessionUiState.collectAsStateWithLifecycle()
-        val favouriteUiState by homeViewModel.recentSessionFavouriteUiState.collectAsStateWithLifecycle()
         val userProfileUiState by homeViewModel.userProfileUiState.collectAsStateWithLifecycle()
-//        HomeScreen(
-//            navController = navController,
-//            userConfigurationUiState = userConfigurationUiState,
-//            recentSessionUiState = recentSessionUiState,
-//            userProfileUiState = userProfileUiState,
-//            onSharedEvent = sharedViewModel::onTriggerEvent,
-//            updateFavouriteUiState = favouriteUiState,
-//            onEvent = homeViewModel::onTriggerEvent
-//        )
         RestaurantHomeScreen(
             navController = navController,
             userConfigurationUiState = userConfigurationUiState,

@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import com.infomerica.insightify.ui.theme.poppinsFontFamily
 import com.intuit.sdp.R
 
@@ -71,7 +72,8 @@ fun MediumLoginDivider() {
             ),
             textAlign = TextAlign.Center,
             fontFamily = poppinsFontFamily,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp
         )
         HorizontalDivider(
             modifier = Modifier.width(

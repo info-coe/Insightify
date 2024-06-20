@@ -17,7 +17,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "v1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -29,7 +29,14 @@ android {
         create("release") {
             storeFile = file("/home/luna/projects/Insightify/release.jks")
             storePassword = "Info@123"
-            keyAlias = "release"
+            keyAlias = "Test Release"
+            keyPassword = "Info@123"
+        }
+
+        create("alpha") {
+            storeFile = file("/home/luna/projects/Insightify/alpha.jks")
+            storePassword = "Info@123"
+            keyAlias = "Alpha Build"
             keyPassword = "Info@123"
         }
     }
@@ -56,13 +63,13 @@ android {
         create("alpha") {
             isMinifyEnabled = true
             isShrinkResources = true
-            isDebuggable = true
+            isDebuggable = false
             versionNameSuffix = "alpha"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("alpha")
         }
     }
     compileOptions {
@@ -102,6 +109,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.foundation:foundation:1.7.0-beta03")
     implementation("androidx.compose.material3:material3-android:1.2.0")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.compose.material:material-icons-extended-android:1.6.2")
@@ -178,6 +186,8 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("androidx.compose.material3:material3-window-size-class-android:1.2.1")
+
+    implementation ("com.google.accompanist:accompanist-permissions:0.23.1")
 
 
     implementation("dev.shreyaspatil.EasyUpiPayment:EasyUpiPayment:3.0.3")

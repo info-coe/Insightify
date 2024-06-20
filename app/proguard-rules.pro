@@ -83,21 +83,6 @@
 # Alternatively, you can annotate classes and class members with @androidx.annotation.Keep
 
 
-#For Response Type
--keepclassmembers enum com.infomerica.insightify.ui.composables.chatbot.personal_assistant.ResponseType { *; }
-
-#For Message Type
--keepclassmembers enum com.infomerica.insightify.ui.composables.chatbot.personal_assistant.MessageType { *; }
-
-#For MessageOrigin Type
--keepclassmembers enum com.infomerica.insightify.ui.composables.chatbot.personal_assistant.MessageOrigin { *; }
-
--keepclassmembers enum com.infomerica.insightify.ui.composables.chatbot.personal_assistant.ConversationType { *; }
-
--keepclassmembers class com.infomerica.insightify.ui.composables.chatbot.personal_assistant.DropDownItem { *; }
-
--keepclassmembers class com.infomerica.insightify.ui.composables.conversation.ConversationMessageModelKt { *; }
-
 
 
 
@@ -117,8 +102,6 @@
 -dontwarn com.oracle.svm.core.annotate.Delete
 -dontwarn com.oracle.svm.core.annotate.TargetClass
 
--keepclassmembernames class com.infomerica.insightify.ui.composables.chatbot.generic_assistant.menu.Item {<fields>;}
--keepclassmembernames class com.infomerica.insightify.ui.composables.chatbot.generic_assistant.menu.Item {<fields>;}
 
 
 ### Gson ProGuard and R8 rules which are relevant for all users

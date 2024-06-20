@@ -2,7 +2,6 @@ package com.infomerica.insightify.ui.composables.home
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -34,8 +33,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
@@ -64,7 +61,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -77,9 +73,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.Wallpapers.GREEN_DOMINATED_EXAMPLE
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -654,7 +647,17 @@ private fun MediumRestaurantHomeScreenContent(
         item {
             AnimatedVisibility(
                 visible = userConfigurationUiState.isLoading,
-                label = "home_loading"
+                label = "home_loading",
+                enter = slideInVertically(
+                    tween(700),
+                    initialOffsetY = {
+                        it/3
+                    }
+                ) + fadeIn(tween(700)),
+                exit = slideOutVertically(
+                    tween(700)
+                ) +  fadeOut(tween(700))
+
             ) {
                 Box(
                     modifier = Modifier
@@ -695,7 +698,7 @@ private fun MediumRestaurantHomeScreenContent(
             ) {
                 Box(
                     modifier = Modifier
-                        .height(dimensionResource(id = DP._45sdp))
+                        .height(dimensionResource(id = DP._30sdp))
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.surfaceContainer)
                         .aspectRatio(1f),
@@ -704,7 +707,7 @@ private fun MediumRestaurantHomeScreenContent(
                     when {
                         userProfileUiState.isLoading -> {
                             CircularProgressIndicator(
-                                modifier = Modifier.size(30.dp),
+                                modifier = Modifier.size(dimensionResource(id = DP._20sdp)),
                                 progress = { .5f },
                                 strokeWidth = 3.dp,
                                 trackColor = MaterialTheme.colorScheme.primaryContainer
@@ -722,14 +725,14 @@ private fun MediumRestaurantHomeScreenContent(
                 }
                 Column(
                     modifier = Modifier
-                        .padding(start = 15.dp)
+                        .padding(start = dimensionResource(id = DP._10sdp))
                         .fillMaxWidth()
                         .wrapContentHeight(),
                     horizontalAlignment = Alignment.Start
                 ) {
                     InstfyRegularText(
                         text = "Hello,",
-                        fontSize = dimensionResource(id = SP._14ssp).value.toInt()
+                        fontSize = dimensionResource(id = SP._8ssp).value.toInt()
                     )
                     Text(
                         text = userProfileUiState.userProfileDto?.username ?: "",
@@ -737,10 +740,10 @@ private fun MediumRestaurantHomeScreenContent(
                             .wrapContentSize(),
                         fontFamily = poppinsFontFamily,
                         color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = dimensionResource(id = SP._14ssp).value.sp,
+                        fontSize = dimensionResource(id = SP._10ssp).value.sp,
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Start,
-                        lineHeight = dimensionResource(id = SP._22ssp).value.sp,
+                        lineHeight = dimensionResource(id = SP._14ssp).value.sp,
                         maxLines = 2,
                         style = TextStyle(
                             brush = Brush.linearGradient(
@@ -799,7 +802,7 @@ private fun MediumRestaurantHomeScreenContent(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(dimensionResource(id = com.intuit.sdp.R.dimen._140sdp))
+                        .height(dimensionResource(id = com.intuit.sdp.R.dimen._120sdp))
                         .clip(MaterialTheme.shapes.large)
                         .clickable {
                             navController.navigate(
@@ -846,13 +849,13 @@ private fun MediumRestaurantHomeScreenContent(
                                 .alpha(.8f),
                             maxLines = 3,
                             overflow = TextOverflow.Ellipsis,
-                            fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp,
-                            lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp
+                            fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._8ssp).value.sp,
+                            lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp
                         )
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)),
+                            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
@@ -860,13 +863,15 @@ private fun MediumRestaurantHomeScreenContent(
                                 fontFamily = poppinsFontFamily,
                                 fontWeight = FontWeight.SemiBold,
                                 color = Color.White,
-                                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._17ssp).value.sp
+                                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp
                             )
 
                             Icon(
                                 imageVector = Icons.Rounded.ArrowForward,
                                 contentDescription = "",
-                                tint = Color.White
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .size(dimensionResource(id = DP._12sdp))
                             )
 
                         }
@@ -883,7 +888,8 @@ private fun MediumRestaurantHomeScreenContent(
                     .fillMaxWidth(),
             ) {
                 Column(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(dimensionResource(id = com.intuit.sdp.R.dimen._2sdp))
                 ) {
@@ -899,7 +905,7 @@ private fun MediumRestaurantHomeScreenContent(
                                         HomeScreens.RecentOrderScreen.route
                                     )
                             }
-                            .height(dimensionResource(id = com.intuit.sdp.R.dimen._50sdp)),
+                            .height(dimensionResource(id = com.intuit.sdp.R.dimen._35sdp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -915,11 +921,11 @@ private fun MediumRestaurantHomeScreenContent(
                         text = "Recent orders",
                         fontFamily = poppinsFontFamily,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp,
+                        fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp,
                         lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._20ssp).value.sp,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
-                            .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp))
+                            .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._2sdp))
                     )
                 }
                 Spacer(modifier = Modifier.weight(.1f))
@@ -944,7 +950,7 @@ private fun MediumRestaurantHomeScreenContent(
                                     }
                                 }
                             }
-                            .height(dimensionResource(id = com.intuit.sdp.R.dimen._50sdp)),
+                            .height(dimensionResource(id = com.intuit.sdp.R.dimen._35sdp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -960,11 +966,11 @@ private fun MediumRestaurantHomeScreenContent(
                         text = "Rate us",
                         fontFamily = poppinsFontFamily,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp,
+                        fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp,
                         lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._20ssp).value.sp,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
-                            .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp))
+                            .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._2sdp))
                     )
                 }
             }
@@ -994,7 +1000,7 @@ private fun MediumRestaurantHomeScreenContent(
                                         HomeScreens.AboutUsScreenSpec.route
                                     )
                             }
-                            .height(dimensionResource(id = com.intuit.sdp.R.dimen._50sdp)),
+                            .height(dimensionResource(id = com.intuit.sdp.R.dimen._35sdp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -1010,11 +1016,11 @@ private fun MediumRestaurantHomeScreenContent(
                         text = "About us",
                         fontFamily = poppinsFontFamily,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp,
+                        fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp,
                         lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._20ssp).value.sp,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
-                            .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp))
+                            .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._2sdp))
                     )
                 }
                 Spacer(modifier = Modifier.weight(.1f))
@@ -1032,7 +1038,7 @@ private fun MediumRestaurantHomeScreenContent(
                             .clickable {
                                 context.makeToast("Will avail soon.")
                             }
-                            .height(dimensionResource(id = com.intuit.sdp.R.dimen._50sdp)),
+                            .height(dimensionResource(id = com.intuit.sdp.R.dimen._35sdp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -1048,11 +1054,11 @@ private fun MediumRestaurantHomeScreenContent(
                         text = "Ai Guide",
                         fontFamily = poppinsFontFamily,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp,
+                        fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp,
                         lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._20ssp).value.sp,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
-                            .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp))
+                            .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._2sdp))
                     )
                 }
             }

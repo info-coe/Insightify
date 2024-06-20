@@ -3,7 +3,6 @@ package com.infomerica.insightify.db.entites
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.infomerica.insightify.ui.composables.login.google_sign_in.UserConfigurationDto
 import com.infomerica.insightify.ui.composables.login.google_sign_in.UserMetaDataDto
 
 @Entity(

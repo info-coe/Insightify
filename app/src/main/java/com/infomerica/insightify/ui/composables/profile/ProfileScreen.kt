@@ -59,6 +59,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.infomerica.insightify.ui.composables.login.google_sign_in.UserProfileDto
+import com.infomerica.insightify.ui.navigation.profile.ProfileScreens
 import com.infomerica.insightify.ui.theme.InsightifyTheme
 import com.infomerica.insightify.ui.theme.poppinsFontFamily
 import com.infomerica.insightify.util.CompactThemedPreviewProvider
@@ -208,6 +209,9 @@ private fun ProfileScreenContent(
                         .weight(.9f)
                         .clip(MaterialTheme.shapes.extraLarge)
                         .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                        .clickable {
+                            navController.navigate(ProfileScreens.SettingsScreen.route)
+                        }
                         .padding(dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
