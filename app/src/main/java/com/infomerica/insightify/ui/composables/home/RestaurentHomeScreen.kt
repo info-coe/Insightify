@@ -37,10 +37,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material.icons.outlined.Timelapse
 import androidx.compose.material.icons.rounded.ArrowForward
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -58,6 +61,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -92,6 +96,7 @@ import com.infomerica.insightify.ui.theme.poppinsFontFamily
 import com.infomerica.insightify.util.CalculateWindowSize
 import com.infomerica.insightify.util.CompactThemedPreviewProvider
 import com.infomerica.insightify.util.MediumThemedPreviewProvider
+import com.infomerica.insightify.util.redirectToWebsite
 import com.intuit.sdp.R.dimen as DP
 import com.intuit.ssp.R.dimen as SP
 
@@ -211,6 +216,7 @@ private fun CompactRestaurantHomeScreenContent(
 
     LazyColumn(
         modifier = Modifier
+            .padding(paddingValues)
             .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp))
             .fillMaxSize()
     ) {
@@ -377,7 +383,8 @@ private fun CompactRestaurantHomeScreenContent(
                         contentDescription = "",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .wrapContentHeight(),
+                            .wrapContentHeight()
+                            .blur(1.dp),
                         contentScale = ContentScale.Crop,
                     )
                     Box(
@@ -577,7 +584,7 @@ private fun CompactRestaurantHomeScreenContent(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Outlined.Add,
+                                imageVector = Icons.Outlined.OpenInBrowser,
                                 contentDescription = "",
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier
@@ -595,6 +602,80 @@ private fun CompactRestaurantHomeScreenContent(
                     }
                 }
 
+            }
+        }
+        item {
+            Column(
+                modifier = Modifier
+                    .padding(
+                        top = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp),
+                        bottom = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp)
+                    )
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.large)
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                verticalArrangement = Arrangement.Top
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.webiste_banner),
+                    contentDescription = "",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(dimensionResource(id = com.intuit.sdp.R.dimen._120sdp))
+                )
+                Text(
+                    text = "Insightify website is now here to manage your orders for restaurants",
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = poppinsFontFamily,
+                    modifier = Modifier
+                        .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp))
+                        .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)),
+                    fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp,
+                    lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._22ssp).value.sp
+                )
+                Text(
+                    text = "We introducing you, Insightify website interface for restaurant managemnent, To manage the orders form insightify application.",
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = poppinsFontFamily,
+                    modifier = Modifier
+                        .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp))
+                        .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp))
+                        .alpha(.8f),
+                    fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp,
+                    lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._16ssp).value.sp
+                )
+                Button(
+                    onClick = { context.redirectToWebsite("http://44.197.221.249:5173/react_firebase") },
+                    modifier = Modifier
+                        .padding(
+                            top = dimensionResource(id = com.intuit.sdp.R.dimen._15sdp),
+                            bottom = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)
+                        )
+                        .fillMaxWidth()
+                        .height(dimensionResource(id = com.intuit.sdp.R.dimen._40sdp))
+                        .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp)),
+                    shape = MaterialTheme.shapes.large,
+                    colors = ButtonDefaults
+                        .buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                ) {
+                    Text(
+                        text = "Explore Now",
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp
+                    )
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowForward,
+                        contentDescription = "",
+                        modifier = Modifier
+                            .padding(start = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp))
+                            .size(dimensionResource(id = com.intuit.sdp.R.dimen._15sdp))
+                    )
+                }
             }
         }
     }
@@ -641,6 +722,7 @@ private fun MediumRestaurantHomeScreenContent(
 
     LazyColumn(
         modifier = Modifier
+            .padding(paddingValues)
             .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp))
             .fillMaxSize()
     ) {
@@ -651,12 +733,12 @@ private fun MediumRestaurantHomeScreenContent(
                 enter = slideInVertically(
                     tween(700),
                     initialOffsetY = {
-                        it/3
+                        it / 3
                     }
                 ) + fadeIn(tween(700)),
                 exit = slideOutVertically(
                     tween(700)
-                ) +  fadeOut(tween(700))
+                ) + fadeOut(tween(700))
 
             ) {
                 Box(
@@ -817,7 +899,8 @@ private fun MediumRestaurantHomeScreenContent(
                         contentDescription = "",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(),
+                            .fillMaxHeight()
+                            .blur(1.dp),
                         contentScale = ContentScale.Crop,
                     )
                     Box(
@@ -1063,6 +1146,83 @@ private fun MediumRestaurantHomeScreenContent(
                 }
             }
         }
+        item {
+            Spacer(modifier = Modifier.padding(vertical = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)))
+        }
+        item {
+            Column(
+                modifier = Modifier
+                    .padding(
+                        bottom = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp)
+                    )
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.extraLarge)
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                verticalArrangement = Arrangement.Top
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.webiste_banner),
+                    contentDescription = "",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(dimensionResource(id = com.intuit.sdp.R.dimen._100sdp))
+                )
+                Text(
+                    text = "Insightify website is now here to manage your orders for restaurants.",
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = poppinsFontFamily,
+                    modifier = Modifier
+                        .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp))
+                        .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)),
+                    fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp,
+                    lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._17ssp).value.sp
+                )
+                Text(
+                    text = "We introducing you, Insightify website interface for restaurant managemnent, To manage the orders form insightify application.",
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = poppinsFontFamily,
+                    modifier = Modifier
+                        .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp))
+                        .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._3sdp))
+                        .alpha(.8f),
+                    fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._8ssp).value.sp,
+                    lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp
+                )
+                Button(
+                    onClick = { context.redirectToWebsite("http://44.197.221.249:5173/react_firebase") },
+                    modifier = Modifier
+                        .padding(
+                            top = dimensionResource(id = com.intuit.sdp.R.dimen._15sdp),
+                            bottom = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)
+                        )
+                        .fillMaxWidth()
+                        .height(dimensionResource(id = com.intuit.sdp.R.dimen._30sdp))
+                        .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp)),
+                    shape = MaterialTheme.shapes.large,
+                    colors = ButtonDefaults
+                        .buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                ) {
+                    Text(
+                        text = "Explore Now",
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp
+                    )
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowForward,
+                        contentDescription = "",
+                        modifier = Modifier
+                            .padding(start = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp))
+                            .size(dimensionResource(id = com.intuit.sdp.R.dimen._12sdp))
+                    )
+                }
+            }
+        }
+
     }
 }
 
@@ -1101,7 +1261,7 @@ private fun MediumRestaurantHomeScreenPreview() {
                 isLoading = false,
                 userProfileDto = UserProfileDto(
                     profileUrl = "https://images.pexels.com/photos/11867612/pexels-photo-11867612.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-                    username = "Bharadwaj\nsdhshdsjkd"
+                    username = "Bharadwaj"
                 )
             ),
             onEvent = {}

@@ -57,6 +57,10 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.logEvent
+import com.google.firebase.ktx.Firebase
 import com.infomerica.insightify.R
 import com.infomerica.insightify.extension.makeToast
 import com.infomerica.insightify.ui.components.dialog.InstfyAlertDialog
@@ -81,6 +85,15 @@ fun GenericAssistantScreen(
     onAssistantEvent: (AssistantEvent) -> Unit,
 ) {
 
+    DisposableEffect(key1 = Unit) {
+        Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "Assistant Screen")
+            param(FirebaseAnalytics.Param.SCREEN_CLASS, "MainActivity")
+        }
+        onDispose { 
+
+        }
+    }
     val systemUiController = rememberSystemUiController()
     val isInDarkMode = isSystemInDarkTheme()
     systemUiController.setStatusBarColor(

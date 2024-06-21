@@ -18,6 +18,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import com.infomerica.insightify.ui.composables.bottomnavigation.BottomNavigationScreen
 import com.infomerica.insightify.ui.navigation.Graphs
 import com.infomerica.insightify.ui.navigation.on_boarding.OnBoardingScreenSpec
@@ -32,6 +35,8 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseAnalytics.getInstance(this)
+
         setContent {
             InsightifyTheme {
                 val insightifyViewModel: InsightifyViewModel = hiltViewModel()

@@ -38,6 +38,7 @@
 -dontwarn org.openjsse.net.ssl.OpenJSSE
 -dontwarn java.lang.management.ManagementFactory
 -dontwarn java.lang.management.RuntimeMXBean
+-dontwarn java.lang.reflect.AnnotatedType
 
 
 ### your config ....

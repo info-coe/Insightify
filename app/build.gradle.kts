@@ -6,6 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.parcelize")
     id("com.google.gms.google-services")
     id("kotlinx-serialization")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -16,8 +17,8 @@ android {
         applicationId = "com.infomerica.insightify"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "v1.0.0"
+        versionCode = 3
+        versionName = "v1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -114,7 +115,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.compose.material:material-icons-extended-android:1.6.2")
     implementation("androidx.compose.material:material-icons-core-android:1.6.2")
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation(platform("androidx.compose:compose-bom:2024.06.00"))
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha13")
 
@@ -145,13 +146,15 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
 
     //Firebase
-    implementation(platform("com.google.firebase:firebase-bom:32.2.3"))
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
     implementation("com.google.firebase:firebase-database-ktx")
     implementation("com.google.android.gms:play-services-auth-base")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.android.gms:play-services-auth")
     implementation("com.google.firebase:firebase-appcheck-playintegrity")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -187,7 +190,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("androidx.compose.material3:material3-window-size-class-android:1.2.1")
 
-    implementation ("com.google.accompanist:accompanist-permissions:0.23.1")
+    implementation("com.google.accompanist:accompanist-permissions:0.23.1")
 
 
     implementation("dev.shreyaspatil.EasyUpiPayment:EasyUpiPayment:3.0.3")

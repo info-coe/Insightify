@@ -304,6 +304,7 @@ private fun CompactLoginScreenContent(
         item {
             CompactSignInOptions(
                 onGoogleSignIn = {
+                    context.makeToast("Processing your request.")
                     lifeCycleOwner.lifecycleScope.launch {
                         val signInIntentSender = googleAuthUIClient.logIn()
                         googleSignInLauncher.launch(
@@ -505,7 +506,7 @@ private fun MediumLoginScreenContent(
         }
         item {
             Text(
-                text = "By singing in you agree to our terms & conditions.",
+                text = "By signing in you agree to our terms & conditions.",
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._30sdp))
                     .padding(
