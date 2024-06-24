@@ -166,6 +166,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
 
+    //Paypal
+    implementation ("com.paypal.sdk:paypal-android-sdk:2.16.0")
 
     //Lottie animation
     implementation("com.airbnb.android:lottie-compose:6.1.0")

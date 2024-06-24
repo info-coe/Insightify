@@ -5,6 +5,8 @@ import com.google.firebase.Timestamp
 sealed class RecentOrdersEvent {
     data object GetRecentOrders : RecentOrdersEvent()
 
+    data object MakePayment : RecentOrdersEvent()
+
 }
 
 data class RecentOrdersUiState(

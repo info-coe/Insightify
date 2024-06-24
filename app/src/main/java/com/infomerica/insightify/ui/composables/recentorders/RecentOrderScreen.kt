@@ -1,6 +1,12 @@
 package com.infomerica.insightify.ui.composables.recentorders
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -11,32 +17,19 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.AccessTime
-import androidx.compose.material.icons.rounded.AttachMoney
-import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.HourglassEmpty
-import androidx.compose.material.icons.rounded.Star
-import androidx.compose.material.icons.rounded.Timelapse
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,20 +47,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.Wallpapers.GREEN_DOMINATED_EXAMPLE
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.Timestamp
+import com.infomerica.insightify.ui.composables.recentorders.components.compact.CompactPendingScreen
+import com.infomerica.insightify.ui.composables.recentorders.components.compact.CompactSuccessScreen
 import com.infomerica.insightify.ui.navigation.home.HomeScreens
 import com.infomerica.insightify.ui.theme.InsightifyTheme
 import com.infomerica.insightify.ui.theme.dark_Pending
@@ -83,6 +74,15 @@ import com.infomerica.insightify.ui.theme.light_SuccessContainer
 import com.infomerica.insightify.ui.theme.light_onPendingContainer
 import com.infomerica.insightify.ui.theme.light_onSuccessContainer
 import com.infomerica.insightify.ui.theme.poppinsFontFamily
+import com.infomerica.insightify.util.CompactThemedPreviewProvider
+import com.paypal.android.sdk.payments.PayPalConfiguration
+import com.paypal.android.sdk.payments.PayPalPayment
+import com.paypal.android.sdk.payments.PayPalService
+import com.paypal.android.sdk.payments.PaymentActivity
+import com.paypal.android.sdk.payments.PaymentConfirmation
+import timber.log.Timber
+import java.math.BigDecimal
+
 
 @Composable
 fun RecentOrderScreen(
@@ -334,7 +334,6 @@ private fun RecentOrderScreenBody(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun RecentOrderScreenContent(
     paddingValues: PaddingValues,
@@ -342,6 +341,34 @@ private fun RecentOrderScreenContent(
     onOrderEvent: (RecentOrdersEvent) -> Unit,
     recentOrdersUiState: RecentOrdersUiState
 ) {
+
+    val context = LocalContext.current
+    val payPalConfiguration by remember {
+        mutableStateOf(
+            PayPalConfiguration()
+                .environment(PayPalConfiguration.ENVIRONMENT_SANDBOX)
+                .clientId("ARHwaCtPVdBjd3764AWCFSxuyqkJDOaExtzLbs98LlaKxfHjFbRMGzagLeJSbUfco9EqPoI9GNqyhoLC")
+                .acceptCreditCards(true)
+                .rememberUser(true)
+                .forceDefaultsOnSandbox(true)
+        )
+    }
+
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val paymentConfirmation =
+                    result.data?.getParcelableExtra<PaymentConfirmation>(PaymentActivity.EXTRA_RESULT_CONFIRMATION)
+                if (paymentConfirmation != null) {
+                    Timber.tag("PAYMENT").d(paymentConfirmation.toString())
+                } else {
+                    Timber.tag("PAYMENT").e("Payment confirmation is null")
+                }
+            } else {
+                Timber.tag("PAYMENT").e("Payment failed or was cancelled")
+            }
+        }
+
     AnimatedContent(
         targetState = recentOrdersUiState,
         label = "OrderContent",
@@ -383,292 +410,73 @@ private fun RecentOrderScreenContent(
                     }
                 }
             }
+
             it.isPending -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize()
-                ) {
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .background(if (isSystemInDarkTheme()) dark_PendingContainer else light_PendingContainer),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Timelapse,
-                                contentDescription = "",
-                                tint = if (isSystemInDarkTheme()) dark_Pending else light_Pending,
-                                modifier = Modifier
-                                    .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._30sdp))
-                                    .size(dimensionResource(id = com.intuit.sdp.R.dimen._80sdp))
-                            )
-                            Text(
-                                text = "Waiting for approval\nfrom Kitchen.",
-                                textAlign = TextAlign.Center,
-                                fontFamily = poppinsFontFamily,
-                                fontWeight = FontWeight.SemiBold,
-                                color = if (isSystemInDarkTheme()) dark_onPendingContainer else light_onPendingContainer,
-                                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._18ssp).value.sp,
-                                lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._25ssp).value.sp,
-                                modifier = Modifier.padding(vertical = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp))
-                            )
-                        }
-                    }
-                    stickyHeader {
-                        Text(
-                            text = "Your order is in queue. We'll notify you once it's accepted.",
-                            fontFamily = poppinsFontFamily,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp,
-                            modifier = Modifier
-                                .alpha(.8f)
-                                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                                .padding(
-                                    vertical = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp),
-                                    horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._15sdp)
-                                ),
-                            textAlign = TextAlign.Center,
-                            lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._22ssp).value.sp,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                    item {
-                        Text(
-                            text = "Your Order",
-                            fontFamily = poppinsFontFamily,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._18ssp).value.sp,
-                            modifier = Modifier.padding(
-                                horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp),
-                                vertical = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp)
-                            )
-                        )
-                    }
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp))
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .clip(MaterialTheme.shapes.large)
-                                    .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                                    .padding(dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)),
-                                horizontalAlignment = Alignment.Start,
-                                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = com.intuit.sdp.R.dimen._2sdp))
-                            ) {
-                                Text(
-                                    text = recentOrdersUiState.customerName ?: "",
-                                    fontFamily = poppinsFontFamily,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._16ssp).value.sp,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Text(
-                                    text = recentOrdersUiState.orderID ?: "",
-                                    fontFamily = poppinsFontFamily,
-                                    fontWeight = FontWeight.Normal,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)))
-                            Row {
-                                Column(
-                                    modifier = Modifier
-                                        .weight(.6f)
-                                        .wrapContentHeight()
-                                        .clip(MaterialTheme.shapes.large)
-                                        .background(MaterialTheme.colorScheme.secondaryContainer)
-                                        .padding(dimensionResource(id = com.intuit.sdp.R.dimen._15sdp)),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(dimensionResource(id = com.intuit.sdp.R.dimen._5sdp))
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.AccessTime,
-                                        contentDescription = "",
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier
-                                            .size(dimensionResource(id = com.intuit.sdp.R.dimen._22sdp))
-                                    )
-                                    Text(
-                                        text = recentOrdersUiState
-                                            .orderedTime?.toDate().toString(),
-                                        fontFamily = poppinsFontFamily,
-                                        fontWeight = FontWeight.Normal,
-                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                        fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp,
-                                        lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._16ssp).value.sp,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
-                                Spacer(modifier = Modifier.width(dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)))
-                                Column(
-                                    modifier = Modifier
-                                        .weight(.4f)
-                                        .wrapContentHeight()
-                                        .clip(MaterialTheme.shapes.large)
-                                        .background(MaterialTheme.colorScheme.errorContainer)
-                                        .padding(dimensionResource(id = com.intuit.sdp.R.dimen._15sdp)),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(dimensionResource(id = com.intuit.sdp.R.dimen._5sdp))
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.AttachMoney,
-                                        contentDescription = "",
-                                        tint = MaterialTheme.colorScheme.error,
-                                        modifier = Modifier
-                                            .size(dimensionResource(id = com.intuit.sdp.R.dimen._22sdp))
-                                    )
-                                    Text(
-                                        text = recentOrdersUiState
-                                            .totalAmount.toString(),
-                                        fontFamily = poppinsFontFamily,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = MaterialTheme.colorScheme.error,
-                                        fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._16ssp).value.sp,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+                CompactPendingScreen(
+                    paddingValues = paddingValues,
+                    recentOrdersUiState = recentOrdersUiState
+                )
             }
 
             it.isAccepted -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .background(if (isSystemInDarkTheme()) dark_SuccessContainer else light_SuccessContainer),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.CheckCircle,
-                                contentDescription = "",
-                                tint = if (isSystemInDarkTheme()) dark_Success else light_Success,
-                                modifier = Modifier
-                                    .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._30sdp))
-                                    .size(dimensionResource(id = com.intuit.sdp.R.dimen._80sdp))
+                CompactSuccessScreen(
+                    paddingValues = paddingValues,
+                    onRateOrder = {
+                        val recentOrders = arrayOf("test", "hello")
+                        navController.navigate(
+                            HomeScreens.RecentOrderReviewScreen.navigateWithOrders(
+                                recentOrders
                             )
-                            Text(
-                                text = "Chef accepted \n" +
-                                        "your order.",
-                                textAlign = TextAlign.Center,
-                                fontFamily = poppinsFontFamily,
-                                fontWeight = FontWeight.SemiBold,
-                                color = if (isSystemInDarkTheme()) dark_onSuccessContainer else light_onPendingContainer,
-                                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._18ssp).value.sp,
-                                lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._25ssp).value.sp,
-                                modifier = Modifier.padding(vertical = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp))
-                            )
-
-                        }
-                    }
-                    item {
-                        Text(
-                            text = "Your order is confirmed! Our chef is preparing your delicious meal, and it will be at your table soon.",
-                            fontFamily = poppinsFontFamily,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp,
-                            modifier = Modifier
-                                .alpha(.8f)
-                                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                                .padding(
-                                    vertical = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp),
-                                    horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._15sdp)
-                                ),
-                            textAlign = TextAlign.Center,
-                            lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._22ssp).value.sp,
-                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    },
+                    onMakePayment = {
+                        makePayment(
+                            context = context,
+                            amount = recentOrdersUiState.totalAmount.toString(),
+                            currencyType = "USD",
+                            payPalConfiguration = payPalConfiguration,
+                            billName = "${recentOrdersUiState.customerName} Restaurant bill",
+                            launcher = launcher
                         )
                     }
-                    item {
-                        Text(
-                            text = "Thank you for choosing\n indochinese Restaurant.",
-                            fontFamily = poppinsFontFamily,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._18ssp).value.sp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp))
-                                .padding(horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp)),
-                            textAlign = TextAlign.Center,
-                            lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._28ssp).value.sp,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    item {
-                        Button(
-                            onClick = {
-                                val recentOrders = arrayOf("test","hello")
-                                navController.navigate(HomeScreens.RecentOrderReviewScreen.navigateWithOrders(recentOrders))
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth(.8f)
-                                .padding(vertical = dimensionResource(id = com.intuit.sdp.R.dimen._15sdp)),
-                            colors = ButtonDefaults
-                                .buttonColors(
-                                    containerColor = light_SuccessContainer,
-                                    contentColor = light_Success
-                                )
-                        ) {
-                            Icon(imageVector = Icons.Rounded.Star, contentDescription = "")
-                            Text(
-                                text = "Rate your order.",
-                                fontFamily = poppinsFontFamily,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp,
-                                modifier = Modifier
-                                    .padding(dimensionResource(id = com.intuit.sdp.R.dimen._5sdp))
-                            )
-                        }
-                    }
-                }
+                )
             }
 
             it.isRejected -> {
-
+                
             }
         }
     }
 }
 
 
+private fun makePayment(
+    context: Context,
+    amount: String,
+    currencyType: String,
+    payPalConfiguration: PayPalConfiguration,
+    billName: String,
+    launcher: ManagedActivityResultLauncher<Intent, ActivityResult>
+) {
+    val payment = PayPalPayment(
+        BigDecimal(amount),
+        currencyType,
+        billName,
+        PayPalPayment.PAYMENT_INTENT_SALE
+    )
+
+    Intent(context, PaymentActivity::class.java).apply {
+        putExtra(
+            PayPalService.EXTRA_PAYPAL_CONFIGURATION,
+            payPalConfiguration
+        )
+        putExtra(PaymentActivity.EXTRA_PAYMENT, payment)
+        launcher.launch(this)
+    }
+}
+
 @Composable
-@Preview(
-    showBackground = true,
-    device = Devices.PIXEL_7,
-    wallpaper = GREEN_DOMINATED_EXAMPLE,
-    showSystemUi = true
-)
-@Preview(
-    showBackground = true,
-    device = Devices.PIXEL,
-    uiMode = UI_MODE_NIGHT_YES,
-    wallpaper = GREEN_DOMINATED_EXAMPLE,
-    showSystemUi = true
-)
+@CompactThemedPreviewProvider
 private fun RecentOrderScreenPreview() {
     InsightifyTheme {
         RecentOrderScreen(
@@ -676,7 +484,7 @@ private fun RecentOrderScreenPreview() {
             onOrderEvent = {},
             recentOrdersUiState = RecentOrdersUiState(
                 noOrders = true,
-                isAccepted = false,
+                isAccepted = true,
                 isPending = false,
                 orders = mapOf(
                     Pair("Appetizers", listOf(mapOf(Pair("Aloo Tikki", 2.22)))),

@@ -46,6 +46,7 @@ class RecentOrdersViewModel @Inject constructor(
     fun onEvent(event: RecentOrdersEvent) {
         when (event) {
             is RecentOrdersEvent.GetRecentOrders -> getPreviousOrders()
+            is RecentOrdersEvent.MakePayment -> makePayment()
         }
     }
 
@@ -144,6 +145,11 @@ class RecentOrdersViewModel @Inject constructor(
 
                 }
         }
+    }
+
+
+    private fun makePayment() {
+
     }
 
 }
