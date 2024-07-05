@@ -20,7 +20,7 @@ import com.aallam.openai.api.thread.ThreadId
 import com.aallam.openai.client.OpenAI
 import com.aallam.openai.client.OpenAIHost
 import com.aallam.openai.client.RetryStrategy
-import com.infomericainc.insightify.ui.composables.generic_assistant.AssistantConversationModel
+import com.infomericainc.insightify.ui.composables.genericassistant.AssistantConversationModel
 import com.infomericainc.insightify.util.Constants
 import com.infomericainc.insightify.util.Constants.GPT_MODEL
 import com.infomericainc.insightify.util.Resource

@@ -53,7 +53,7 @@ fun MediumSettingsItem(
                 lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._18ssp).value.sp
             )
             Text(
-                text = itemDescription.plus("\nhello"),
+                text = itemDescription,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Normal,
                 fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp,

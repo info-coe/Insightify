@@ -15,8 +15,8 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
-import com.infomericainc.insightify.ui.composables.generic_assistant.AssistantViewModel
-import com.infomericainc.insightify.ui.composables.generic_assistant.GenericAssistantScreen
+import com.infomericainc.insightify.ui.composables.genericassistant.AssistantViewModel
+import com.infomericainc.insightify.ui.composables.genericassistant.GenericAssistantScreen
 import com.infomericainc.insightify.ui.composables.home.HomeViewModel
 import com.infomericainc.insightify.ui.composables.shared.SharedViewModel
 import timber.log.Timber

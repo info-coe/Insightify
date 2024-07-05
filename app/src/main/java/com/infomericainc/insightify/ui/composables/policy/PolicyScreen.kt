@@ -35,6 +35,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.infomericainc.insightify.ui.composables.policy.varients.CompactPolicyScreenContent
+import com.infomericainc.insightify.ui.composables.policy.varients.MediumPolicyScreenContent
 import com.infomericainc.insightify.ui.theme.InsightifyTheme
 import com.infomericainc.insightify.ui.theme.poppinsFontFamily
 import com.infomericainc.insightify.util.CalculateWindowSize
@@ -59,7 +60,7 @@ fun PolicyScreen(
                 CompactPolicyScreenContent(paddingValues = paddingValues)
             },
             mediumContent = {
-
+                MediumPolicyScreenContent(paddingValues = paddingValues)
             },
             unSupportedContent = {
 
