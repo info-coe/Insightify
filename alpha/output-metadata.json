@@ -4,15 +4,15 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.infomerica.insightify",
+  "applicationId": "com.infomericainc.insightify",
   "variantName": "alpha",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 2,
-      "versionName": "v1.0.2alpha",
+      "versionCode": 1,
+      "versionName": "v1.0.0alpha",
       "outputFile": "app-alpha.apk"
     }
   ],

@@ -1,0 +1,50 @@
+package com.infomericainc.insightify.ui.theme
+
+import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.infomericainc.insightify.R
+
+val poppinsFontFamily = FontFamily(
+    Font(R.font.pop_bold, weight = FontWeight.Bold),
+    Font(R.font.pop_semi, weight = FontWeight.SemiBold),
+    Font(R.font.pop_reg, weight = FontWeight.Normal),
+    Font(R.font.pop_med, weight = FontWeight.Medium)
+)
+
+class InstfyTypography(
+    val headingLarge : TextStyle = TextStyle.Default,
+    val headingMedium : TextStyle = TextStyle.Default,
+    val headingSmall : TextStyle = TextStyle.Default,
+    val subHeading :TextStyle = TextStyle.Default
+)
+
+// Set of Material typography styles to start with
+val Typography = Typography(
+    bodyLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    )
+    /* Other default text styles to override
+    titleLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Medium,
+        fontSize = 11.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
+    )
+    */
+)
