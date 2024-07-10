@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.Packaging
+
 plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
@@ -10,15 +12,15 @@ plugins {
 }
 
 android {
-    namespace = "com.infomerica.insightify"
+    namespace = "com.infomericainc.insightify"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.infomerica.insightify"
+        applicationId = "com.infomericainc.insightify"
         minSdk = 24
         targetSdk = 34
-        versionCode = 3
-        versionName = "v1.0.3"
+        versionCode = 2
+        versionName = "v1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -91,16 +93,20 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    packaging {
+        resources.excludes.add("META-INF/LICENSE.md")
+        resources.excludes.add("META-INF/NOTICE.md")
+
+    }
 }
 
 dependencies {
-
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.6.7")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.6.1")
     // Compose dependencies
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.navigation:navigation-compose:2.7.7")
@@ -125,11 +131,11 @@ dependencies {
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.3")
     // Coroutine Lifecycle Scopes
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
 
     //Dagger - Hilt
     implementation("com.google.dagger:hilt-android:2.48")
@@ -146,7 +152,7 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
 
     //Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
     implementation("com.google.firebase:firebase-database-ktx")
     implementation("com.google.android.gms:play-services-auth-base")
     implementation("com.google.firebase:firebase-auth-ktx")
@@ -161,12 +167,6 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
-    debugImplementation("com.github.chuckerteam.chucker:library:3.5.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-
-
     //Lottie animation
     implementation("com.airbnb.android:lottie-compose:6.1.0")
 
@@ -176,6 +176,9 @@ dependencies {
     //permission
     implementation("com.google.accompanist:accompanist-permissions:0.23.1")
 
+    //Stripe
+    implementation ("com.stripe:stripe-android:20.47.4")
+    implementation ("com.stripe:stripe-java:26.0.0")
 
     implementation("org.jsoup:jsoup:1.14.3")
 
@@ -183,10 +186,12 @@ dependencies {
     implementation("com.intuit.sdp:sdp-android:1.1.0")
 
     //open api
-    // define dependencies without versions
     implementation("com.aallam.openai:openai-client:3.7.2")
     runtimeOnly("io.ktor:ktor-client-okhttp:2.2.2")
 
+    //Sun Email
+    implementation ("com.sun.mail:android-mail:1.6.7")
+    implementation ("com.sun.mail:android-activation:1.6.7")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("androidx.compose.material3:material3-window-size-class-android:1.2.1")
 

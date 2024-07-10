@@ -41,6 +41,12 @@
 -dontwarn java.lang.reflect.AnnotatedType
 
 
+-dontwarn com.google.crypto.tink.subtle.Ed25519Sign$KeyPair
+-dontwarn com.google.crypto.tink.subtle.Ed25519Sign
+-dontwarn com.google.crypto.tink.subtle.Ed25519Verify
+-dontwarn com.google.crypto.tink.subtle.X25519
+-dontwarn lombok.Generated
+
 ### your config ....
 
 # Keep `Companion` object fields of serializable classes.
