@@ -4,9 +4,6 @@ import com.google.firebase.Timestamp
 
 sealed class RecentOrdersEvent {
     data object GetRecentOrders : RecentOrdersEvent()
-
-    data object MakePayment : RecentOrdersEvent()
-
 }
 
 data class RecentOrdersUiState(
@@ -23,5 +20,6 @@ data class RecentOrdersUiState(
     val amount: Map<String,Double?>? = null,
     val taxes: Double? = null,
     val totalAmount: Double? = null,
+    val paymentStatus: String? = null,
     val error: String? = null
 )

@@ -8,6 +8,7 @@ import com.infomericainc.insightify.api.mapper.StripeMapper.toEphemeralKeyDto
 import com.infomericainc.insightify.api.mapper.StripeMapper.toPaymentIntentDto
 import com.infomericainc.insightify.extension.logError
 import com.infomericainc.insightify.extension.logInfo
+import com.infomericainc.insightify.extension.toCurrency
 import com.infomericainc.insightify.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -89,7 +90,7 @@ class StripeRepository @Inject constructor(
             .createPaymentIntent(
                 apiKey = apiKey,
                 customerID = customerID,
-                amount = amount.toInt(),
+                amount = amount.toCurrency(),
                 currency = currency,
                 description = description
             )

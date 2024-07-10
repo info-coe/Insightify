@@ -6,6 +6,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -17,6 +18,7 @@ import com.infomericainc.insightify.ui.composables.home.HomeViewModel
 import com.infomericainc.insightify.ui.composables.shared.SharedViewModel
 import com.infomericainc.insightify.ui.composables.transaction.TransactionScreen
 import com.infomericainc.insightify.ui.composables.transaction.TransactionViewModel
+import timber.log.Timber
 
 data object TransactionScreenSpec : HomeSpec {
     override val route: String
@@ -38,10 +40,16 @@ data object TransactionScreenSpec : HomeSpec {
     ) {
         val transactionViewModel: TransactionViewModel = hiltViewModel()
         val transactionUiState by transactionViewModel.transactionUiState.collectAsStateWithLifecycle()
+        val transactionUpdateUIState by transactionViewModel.transactionUpdateUIState.collectAsStateWithLifecycle()
+        val amount = navBackStackEntry.arguments?.getString("amount")?.toDoubleOrNull()
+        val currency = navBackStackEntry.arguments?.getString("currency")
         TransactionScreen(
             windowWidthSizeClass = windowWidthSizeClass,
             navController = navController,
             transactionUiState = transactionUiState,
+            transactionUpdateUIState = transactionUpdateUIState,
+            amount = amount!!,
+            currency = currency!!,
             onTransactionEvent = transactionViewModel::onEvent
         )
     }

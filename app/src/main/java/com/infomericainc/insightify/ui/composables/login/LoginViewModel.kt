@@ -215,15 +215,15 @@ class LoginViewModel @Inject constructor(
                 .set(userMetaData)
                 .await()
 
-            withContext(Dispatchers.IO) {
-                sendEmail(
-                    to = "bharadwajbharath890@gmail.com",
-                    subject = "Welcome to Insighify",
-                    messageBody = "Welcome to insightify.",
-                    from = "bharadwaj.rns@gmail.com",
-                    password = "rlql fdgw nply jytt"
-                )
-            }
+//            withContext(Dispatchers.IO) {
+//                sendEmail(
+//                    to = "bharadwajbharath890@gmail.com",
+//                    subject = "Welcome to Insighify",
+//                    messageBody = "Welcome to insightify.",
+//                    from = "bharadwaj.rns@gmail.com",
+//                    password = "rlql fdgw nply jytt"
+//                )
+//            }
         }
         onSuccess(userData.toUserProfileDto(),userConfigurationStats.toUserConfigurationDto(),userMetaData)
     }

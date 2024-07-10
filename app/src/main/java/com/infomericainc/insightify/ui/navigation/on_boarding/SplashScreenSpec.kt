@@ -30,7 +30,10 @@ data object SplashScreenSpec : OnBoardingScreenSpec {
         navBackStackEntry: NavBackStackEntry,
         windowSizeClass: WindowSizeClass
     ) {
-        SplashScreen(navController = navController)
+        SplashScreen(
+            navController = navController,
+            windowWidthSizeClass = windowSizeClass.widthSizeClass
+        )
     }
 
     override fun enterTransition(): EnterTransition {

@@ -6,12 +6,16 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
 import com.infomericainc.insightify.ui.composables.home.HomeViewModel
 import com.infomericainc.insightify.ui.composables.payment.PaymentScreen
+import com.infomericainc.insightify.ui.composables.payment.PaymentViewModel
 import com.infomericainc.insightify.ui.composables.shared.SharedViewModel
 
 data object PaymentScreenSpec : HomeSpec {
@@ -32,9 +36,13 @@ data object PaymentScreenSpec : HomeSpec {
         sharedViewModel: SharedViewModel,
         windowWidthSizeClass: WindowWidthSizeClass
     ) {
+        val paymentViewModel : PaymentViewModel = hiltViewModel()
+        val recentOrderUiState by paymentViewModel.recentOrderUiState.collectAsStateWithLifecycle()
         PaymentScreen(
             windowWidthSizeClass = windowWidthSizeClass,
             navController = navController,
+            recentOrderUiState = recentOrderUiState,
+            onPaymentEvent = paymentViewModel::onEvent
         )
     }
 

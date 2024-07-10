@@ -19,8 +19,8 @@ android {
         applicationId = "com.infomericainc.insightify"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "v1.0.0"
+        versionCode = 2
+        versionName = "v1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -167,8 +167,6 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
-    debugImplementation("com.github.chuckerteam.chucker:library:3.5.2")
-
     //Lottie animation
     implementation("com.airbnb.android:lottie-compose:6.1.0")
 

@@ -39,7 +39,6 @@ class AssistantViewModel @Inject constructor(
     private val fireStore: FirebaseFirestore,
     private val firebaseDatabase: DatabaseReference,
     private val userProfileDao: UserProfileDao,
-    private val paymentManager: PaymentManager,
 ) : ViewModel() {
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -106,6 +105,7 @@ class AssistantViewModel @Inject constructor(
             val desert = orders?.OrderData?.Desert?.map { mapOf(it.name to it.price) }
             val orderStatus = "PENDING"
             val paymentStatus = "PENDING"
+            val paymentType : String? = null
             val orderAcceptedTime: Timestamp? = null
             val orderFinishedTime: Timestamp? = null
             val rejectReason: String? = null
@@ -115,7 +115,7 @@ class AssistantViewModel @Inject constructor(
             val recentOrderDto = RecentOrderDto(
                 orderID = orderID,
                 amount = mapOf(
-                    "Dollars" to amount
+                    "USD" to amount
                 ),
                 taxes = taxes,
                 totalAmount = totalAmount,
@@ -131,6 +131,7 @@ class AssistantViewModel @Inject constructor(
                 tableNumber = 7,
                 orderStatus = orderStatus,
                 paymentStatus = paymentStatus,
+                paymentType = paymentType,
                 orderAcceptedTime = orderAcceptedTime,
                 orderFinishedTime = orderFinishedTime,
                 orderRejectReason = rejectReason

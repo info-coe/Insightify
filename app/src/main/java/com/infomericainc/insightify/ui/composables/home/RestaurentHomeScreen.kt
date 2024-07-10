@@ -189,7 +189,7 @@ private fun CompactRestaurantHomeScreenContent(
     val context = LocalContext.current
 
 
-    var homeController by rememberSaveable {
+    var homeController by remember {
         mutableStateOf(false)
     }
 

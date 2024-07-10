@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
+import com.infomericainc.insightify.ui.composables.recentorders.RecentOrdersUiState
 import com.infomericainc.insightify.ui.theme.dark_Success
 import com.infomericainc.insightify.ui.theme.dark_SuccessContainer
 import com.infomericainc.insightify.ui.theme.dark_onSuccessContainer
@@ -47,6 +48,7 @@ import com.infomericainc.insightify.util.CompactThemedPreviewProvider
 fun CompactSuccessScreen(
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
+    recentOrdersUiState: RecentOrdersUiState,
     onRateOrder: () -> Unit,
     onMakePayment: () -> Unit
 ) {
@@ -127,37 +129,39 @@ fun CompactSuccessScreen(
                     .padding(top = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp))
                     .fillMaxWidth()
             ) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .heightIn(max = dimensionResource(id = com.intuit.sdp.R.dimen._100sdp))
-                        .clip(MaterialTheme.shapes.large)
-                        .background(light_SuccessContainer)
-                        .clickable { onMakePayment() }
-                        .padding(dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Payment,
-                        contentDescription = "",
-                        tint = light_onSuccessContainer,
+                if(recentOrdersUiState.paymentStatus != "ACCEPTED") {
+                    Column(
                         modifier = Modifier
-                            .size(dimensionResource(id = com.intuit.sdp.R.dimen._22sdp))
-                    )
-                    Text(
-                        text = "Make payment",
-                        fontFamily = poppinsFontFamily,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp,
-                        modifier = Modifier
-                            .padding(dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)),
-                        color = light_onSuccessContainer,
-                        textAlign = TextAlign.Center,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                            .weight(1f)
+                            .heightIn(max = dimensionResource(id = com.intuit.sdp.R.dimen._100sdp))
+                            .clip(MaterialTheme.shapes.large)
+                            .background(light_SuccessContainer)
+                            .clickable { onMakePayment() }
+                            .padding(dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Payment,
+                            contentDescription = "",
+                            tint = light_onSuccessContainer,
+                            modifier = Modifier
+                                .size(dimensionResource(id = com.intuit.sdp.R.dimen._22sdp))
+                        )
+                        Text(
+                            text = "Make payment",
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp,
+                            modifier = Modifier
+                                .padding(dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)),
+                            color = light_onSuccessContainer,
+                            textAlign = TextAlign.Center,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)))
                 }
-                Spacer(modifier = Modifier.width(dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)))
                 Column(
                     modifier = Modifier
                         .weight(1f)
@@ -201,6 +205,7 @@ private fun CompactSuccessScreenPreview() {
     ) {
         CompactSuccessScreen(
             paddingValues = PaddingValues(),
+            recentOrdersUiState = RecentOrdersUiState(),
             onRateOrder = { /*TODO*/ },
             onMakePayment = {
 

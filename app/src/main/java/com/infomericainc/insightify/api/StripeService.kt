@@ -33,7 +33,7 @@ interface StripeService {
         @Header("Authorization") apiKey: String,
         @Header("Stripe-Version") stripeVersion: String = "2024-06-20",
         @Field("customer") customerID: String,
-        @Field("amount") amount: Int,
+        @Field("amount") amount: Long,
         @Field("currency") currency: String,
         @Field("description") description: String
     ): PaymentIntent?

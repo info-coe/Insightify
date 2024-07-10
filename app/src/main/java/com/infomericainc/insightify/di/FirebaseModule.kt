@@ -5,6 +5,9 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.LocalCacheSettings
+import com.google.firebase.firestore.firestoreSettings
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import dagger.Module
@@ -19,7 +22,9 @@ object FirebaseModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseFireStore() : FirebaseFirestore = Firebase.firestore
+    fun provideFirebaseFireStore() : FirebaseFirestore = Firebase.firestore.apply {
+
+    }
 
     @Provides
     @Singleton

@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.navigation.NavController
 import com.infomericainc.insightify.ui.components.placeholders.UnSupportedResolutionPlaceHolder
 import com.infomericainc.insightify.ui.composables.transaction.varients.CompactTransactionScreenContent
+import com.infomericainc.insightify.ui.composables.transaction.varients.MediumTransactionScreenContent
 import com.infomericainc.insightify.ui.theme.InsightifyTheme
 import com.infomericainc.insightify.util.CalculateWindowSize
 
@@ -33,6 +34,9 @@ fun TransactionScreen(
     windowWidthSizeClass: WindowWidthSizeClass,
     navController: NavController,
     transactionUiState: TransactionUiState,
+    transactionUpdateUIState: TransactionUpdateUIState,
+    amount: Double,
+    currency: String,
     onTransactionEvent: (TransactionEvent) -> Unit
 ) {
     TransactionScreenBody {
@@ -42,11 +46,21 @@ fun TransactionScreen(
                 CompactTransactionScreenContent(
                     navController = navController,
                     transactionUiState = transactionUiState,
-                    onTransactionEvent = onTransactionEvent
+                    transactionUpdateUIState = transactionUpdateUIState,
+                    onTransactionEvent = onTransactionEvent,
+                    amount = amount,
+                    currency = currency
                 )
             },
             mediumContent = {
-
+                MediumTransactionScreenContent(
+                    navController = navController,
+                    transactionUiState = transactionUiState,
+                    transactionUpdateUIState = transactionUpdateUIState,
+                    onTransactionEvent = onTransactionEvent,
+                    amount = amount,
+                    currency = currency
+                )
             },
             unSupportedContent = {
                 UnSupportedResolutionPlaceHolder()

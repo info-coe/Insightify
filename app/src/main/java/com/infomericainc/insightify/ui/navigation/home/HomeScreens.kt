@@ -5,7 +5,11 @@ sealed class HomeScreens(val route : String) {
     data object GenericAssistantScreen : HomeScreens("generic_assistant_screen")
     data object RecentOrderScreen : HomeScreens("recent_order_screen")
     data object PaymentScreen : HomeScreens("payment_screen")
-    data object TransactionScreen : HomeScreens("transaction_screen")
+    data object TransactionScreen : HomeScreens("transaction_screen/{amount}/{currency}") {
+        fun navigateWithAmountAndCurrency(amount : Double, currency : String) : String {
+            return "transaction_screen/$amount/$currency"
+        }
+    }
     data object RecentOrderReviewScreen : HomeScreens("recent_order_review_screen/{orders}") {
         fun navigateWithOrders(orders : Array<String>) : String {
             return "recent_order_review_screen/$orders"

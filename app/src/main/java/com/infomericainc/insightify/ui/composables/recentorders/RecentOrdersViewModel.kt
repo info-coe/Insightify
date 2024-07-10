@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.Source
 import com.infomericainc.insightify.db.dao.UserProfileDao
 import com.infomericainc.insightify.ui.composables.genericassistant.order.RecentOrderDto
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,7 +47,6 @@ class RecentOrdersViewModel @Inject constructor(
     fun onEvent(event: RecentOrdersEvent) {
         when (event) {
             is RecentOrdersEvent.GetRecentOrders -> getPreviousOrders()
-            is RecentOrdersEvent.MakePayment -> makePayment()
         }
     }
 
@@ -66,9 +66,10 @@ class RecentOrdersViewModel @Inject constructor(
             fireStore
                 .collection("ORDERS")
                 .whereEqualTo("tableNumber", 7)
-                .whereNotEqualTo("paymentStatus","PAID")
+                .whereNotEqualTo("paymentStatus","ACCEPTED")
                 .orderBy("paymentStatus")
                 .orderBy("orderTime", Query.Direction.DESCENDING)
+                .limit(1)
                 .addSnapshotListener { value, error ->
                     Timber
                         .tag(RECENT_ORDER_VIEW_MODEL)
@@ -121,7 +122,8 @@ class RecentOrdersViewModel @Inject constructor(
                                     amount = recentOrder.amount,
                                     taxes = recentOrder.taxes,
                                     totalAmount = recentOrder.totalAmount,
-                                    customerName = recentOrder.customerName
+                                    customerName = recentOrder.customerName,
+                                    paymentStatus = recentOrder.paymentStatus
                                 )
                             }
 
@@ -145,11 +147,6 @@ class RecentOrdersViewModel @Inject constructor(
 
                 }
         }
-    }
-
-
-    private fun makePayment() {
-
     }
 
 }

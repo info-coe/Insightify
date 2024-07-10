@@ -27,6 +27,8 @@ data class RecentOrderDto(
     val orderStatus: String? = null,
     @PropertyName(PAYMENT_STATUS)
     val paymentStatus: String? = null,
+    @PropertyName(PAYMENT_TYPE)
+    val paymentType: String? = null,
     @PropertyName(ORDER_ACCEPTED_TIME)
     val orderAcceptedTime: Timestamp? = null,
     @PropertyName(ORDER_FINISHED_TIME)
@@ -45,6 +47,7 @@ data class RecentOrderDto(
         const val ORDER_ID = "orderID"
         const val ORDER_STATUS = "orderStatus"
         const val PAYMENT_STATUS = "paymentStatus"
+        const val PAYMENT_TYPE = "paymentType"
         const val ORDER_ACCEPTED_TIME = "orderAcceptedTime"
         const val ORDER_FINISHED_TIME = "orderFinishedTime"
         const val ORDER_REJECT_REASON = "orderRejectReason"

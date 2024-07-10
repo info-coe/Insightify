@@ -389,6 +389,7 @@ private fun RecentOrderScreenContent(
             it.isAccepted -> {
                 CompactSuccessScreen(
                     paddingValues = paddingValues,
+                    recentOrdersUiState = recentOrdersUiState,
                     onRateOrder = {
                         val recentOrders = arrayOf("test", "hello")
                         navController.navigate(

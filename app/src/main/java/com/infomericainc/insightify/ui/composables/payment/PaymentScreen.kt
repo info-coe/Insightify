@@ -8,6 +8,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -22,9 +23,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.navigation.NavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.infomericainc.insightify.ui.components.placeholders.UnSupportedResolutionPlaceHolder
 import com.infomericainc.insightify.ui.composables.payment.varient.CompactPaymentScreen
-import com.infomericainc.insightify.ui.navigation.home.HomeScreens
+import com.infomericainc.insightify.ui.composables.payment.varient.MediumPaymentScreen
 import com.infomericainc.insightify.ui.theme.InsightifyTheme
 import com.infomericainc.insightify.util.CalculateWindowSize
 
@@ -32,18 +34,42 @@ import com.infomericainc.insightify.util.CalculateWindowSize
 fun PaymentScreen(
     modifier: Modifier = Modifier,
     windowWidthSizeClass: WindowWidthSizeClass,
-    navController: NavController
+    navController: NavController,
+    recentOrderUiState: RecentPaymentOrderUiState,
+    onPaymentEvent: (PaymentEvent) -> Unit
 ) {
+
+    val systemUiController = rememberSystemUiController()
+    systemUiController.apply {
+        setStatusBarColor(
+            MaterialTheme.colorScheme.surface,
+            darkIcons = !isSystemInDarkTheme()
+        )
+        setNavigationBarColor(
+            MaterialTheme.colorScheme.surface,
+            darkIcons = !isSystemInDarkTheme()
+        )
+    }
     PaymentScreenBody {
         CalculateWindowSize(
             windowWidthSizeClass = windowWidthSizeClass,
             compactContent = {
-                CompactPaymentScreen(paddingValues = it) {
-                    navController.navigate(HomeScreens.TransactionScreen.route)
+                CompactPaymentScreen(
+                    paddingValues = it,
+                    navController = navController,
+                    recentOrderUiState = recentOrderUiState
+                ) {
+                    onPaymentEvent(it)
                 }
             },
             mediumContent = {
-
+                MediumPaymentScreen(
+                    paddingValues = it,
+                    navController = navController,
+                    recentOrderUiState = recentOrderUiState
+                ) {
+                    onPaymentEvent(it)
+                }
             },
             unSupportedContent = {
                 UnSupportedResolutionPlaceHolder()
