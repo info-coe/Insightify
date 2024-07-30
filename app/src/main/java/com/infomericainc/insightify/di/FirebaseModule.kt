@@ -2,6 +2,7 @@ package com.infomericainc.insightify.di
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.FirebaseFirestore
@@ -35,4 +36,8 @@ object FirebaseModule {
     @Provides
     @Singleton
     fun provideFirebaseAuth() : FirebaseAuth = Firebase.auth
+
+    @Provides
+    @Singleton
+    fun provideFirebaseCrashlytics() : FirebaseCrashlytics = FirebaseCrashlytics.getInstance()
 }

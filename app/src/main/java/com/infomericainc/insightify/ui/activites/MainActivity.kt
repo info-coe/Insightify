@@ -2,7 +2,9 @@ package com.infomericainc.insightify.ui.activites
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
@@ -34,7 +36,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseAnalytics.getInstance(this)
-
         setContent {
             InsightifyTheme {
                 val insightifyViewModel: InsightifyViewModel = hiltViewModel()

@@ -257,6 +257,9 @@ private fun ProfileScreenContent(
                         .weight(.9f)
                         .clip(MaterialTheme.shapes.extraLarge)
                         .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                        .clickable {
+                            navController.navigate(ProfileScreens.ProfileCustomizationScreen.route)
+                        }
                         .padding(dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -363,7 +366,7 @@ private fun ProfileScreenContent(
                     modifier = Modifier
                         .clickable {
                             navController
-                                .navigate(ProfileScreens.PolicyScreenSpec.route)
+                                .navigate(ProfileScreens.AboutScreenSpec.route)
                         }
                         .padding(
                             horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp),

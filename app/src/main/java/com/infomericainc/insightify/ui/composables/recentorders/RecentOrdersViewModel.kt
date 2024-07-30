@@ -2,6 +2,7 @@ package com.infomericainc.insightify.ui.composables.recentorders
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.Source
@@ -19,13 +20,12 @@ import javax.inject.Inject
 @HiltViewModel
 class RecentOrdersViewModel @Inject constructor(
     private val fireStore: FirebaseFirestore,
-    private val userProfileDao: UserProfileDao,
+    private val firebaseCrashlytics: FirebaseCrashlytics
 ) : ViewModel() {
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        Timber
-            .tag("RECENT_ORDER_SCREEN")
-            .d("Exception caught ${throwable.cause}")
+        firebaseCrashlytics
+            .recordException(throwable)
     }
 
     init {
@@ -62,7 +62,7 @@ class RecentOrdersViewModel @Inject constructor(
                 )
             }
 
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             fireStore
                 .collection("ORDERS")
                 .whereEqualTo("tableNumber", 7)

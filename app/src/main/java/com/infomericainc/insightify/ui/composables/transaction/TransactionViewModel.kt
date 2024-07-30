@@ -2,6 +2,7 @@ package com.infomericainc.insightify.ui.composables.transaction
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
@@ -25,11 +26,13 @@ import javax.inject.Inject
 class TransactionViewModel @Inject constructor(
     private val stripeRepository: StripeRepository,
     private val userProfileDao: UserProfileDao,
-    private val fireStore: FirebaseFirestore
+    private val fireStore: FirebaseFirestore,
+    private val firebaseCrashlytics: FirebaseCrashlytics
 ) : ViewModel() {
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-
+        firebaseCrashlytics
+            .recordException(throwable)
     }
 
     private val mutableTransactionUIState: MutableStateFlow<TransactionUiState> =
@@ -55,6 +58,7 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+    //TODO- Need to fetch API from firebase.
 
     private fun startPayment(
         amount: Double,
@@ -194,7 +198,7 @@ class TransactionViewModel @Inject constructor(
                     isUpdating = true
                 )
             }
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             val ref = fireStore
                 .collection("ORDERS")
                 .whereEqualTo("tableNumber", 7)

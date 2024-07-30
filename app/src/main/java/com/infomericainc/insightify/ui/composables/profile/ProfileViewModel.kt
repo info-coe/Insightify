@@ -2,6 +2,7 @@ package com.infomericainc.insightify.ui.composables.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.infomericainc.insightify.db.dao.UserProfileDao
 import com.infomericainc.insightify.db.entites.toUserProfileDto
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,18 +13,17 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val userProfileDao: UserProfileDao
+    private val userProfileDao: UserProfileDao,
+    private val firebaseCrashlytics: FirebaseCrashlytics
 ) : ViewModel() {
 
-    private val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-        Timber
-            .tag("EXCEPTION")
-            .d(throwable.message.toString())
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        firebaseCrashlytics
+            .recordException(throwable)
     }
 
     private val mutableRecentOrdersUiState =

@@ -1,4 +1,3 @@
-import com.android.build.api.dsl.Packaging
 
 plugins {
     id("org.jetbrains.kotlin.android")
@@ -19,8 +18,8 @@ android {
         applicationId = "com.infomericainc.insightify"
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "v1.0.2"
+        versionCode = 4
+        versionName = "v1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -105,12 +104,15 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.activity:activity-ktx:1.8.2")
+    //Open Source
     implementation("com.jakewharton.timber:timber:5.0.1")
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.1")
     // Compose dependencies
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    //Open Source
     implementation("com.github.bumptech.glide:compose:1.0.0-alpha.1")
+    //Open Source
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
     implementation("androidx.compose.ui:ui")
@@ -124,10 +126,6 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2024.06.00"))
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha13")
-
-    implementation("org.slf4j:slf4j-simple:1.6.1")
-
-    implementation("org.apache.commons:commons-text:1.9")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")

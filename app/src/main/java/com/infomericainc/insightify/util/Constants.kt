@@ -8,6 +8,9 @@ import androidx.compose.ui.unit.sp
 
 object Constants {
 
+
+    const val VERSION = "Alpha-v1.0.4"
+
     const val GPT_MODEL = "gpt-4"
 
     const val LOGIN_PREFERENCES = "login_preferences"
@@ -16,7 +19,9 @@ object Constants {
     const val BASE_URL = "https://api.stripe.com/v1/"
 
     const val TERMS_URL = "https://doc-hosting.flycricket.io/insightify-terms-of-use/611747bf-0c23-446e-a189-239303a7af18/terms"
-    const val PRIVACY_URL = "https://doc-hosting.flycricket.io/insightify-privacy-policy/037ff525-badd-4bf1-ba35-70fd88b9031e/privacy"
+    const val PRIVACY_URL = "https://doc-hosting.flycricket.io/insightify/8c3f7370-0212-4625-afb3-1b68353518c7/privacy"
+    const val CONTACT_US_URL = "https://infomericainc.com/Contact"
+    const val PLAY_STORE_LINK = "https://play.google.com/store/apps/details?id=com.infomericainc.insightify"
 
     //Firebase paths
     enum class UserProfilePath {

@@ -2,6 +2,7 @@ package com.infomericainc.insightify.ui.composables.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.infomericainc.insightify.db.dao.UserConfigurationDao
 import com.infomericainc.insightify.db.dao.UserMetaDataDao
@@ -22,7 +23,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -35,6 +35,7 @@ class HomeViewModel @Inject constructor(
     private val userProfileDao: UserProfileDao,
     private val userConfigurationDao: UserConfigurationDao,
     private val userMetaDataDao: UserMetaDataDao,
+    private val firebaseCrashlytics: FirebaseCrashlytics
 ) : ViewModel() {
 
     private val mutableUserConfigurationUiState: MutableStateFlow<UserConfigurationUiState> =
@@ -49,18 +50,12 @@ class HomeViewModel @Inject constructor(
         mutableUserProfileUiState.asStateFlow()
 
 
-
     init {
         Timber.tag("HOME_VM").i("Initialized")
-        fetchPendingOrders()
     }
 
     override fun onCleared() {
         super.onCleared()
-        Timber.tag("HOME_VM").i(
-            viewModelScope.coroutineContext.job.children.toList().size.toString()
-                .plus(" - Active jobs")
-        )
         Timber.tag("HOME_VM").i("Cleared")
     }
 
@@ -78,7 +73,8 @@ class HomeViewModel @Inject constructor(
             }
 
             else -> {
-                //HANDLE IT
+                firebaseCrashlytics
+                    .recordException(throwable)
             }
         }
     }
@@ -126,9 +122,8 @@ class HomeViewModel @Inject constructor(
                 isLoading = true
             )
         }
+
         viewModelScope.launch(exceptionHandler) {
-
-
             val userProfileEntity = fetchUserProfile()
 
             val userConfigurationEntity = withContext(Dispatchers.IO) {
@@ -146,8 +141,6 @@ class HomeViewModel @Inject constructor(
             userProfileEntity.takeIf { it != null }?.let { userProfileEntity ->
                 userConfigurationEntity.takeIf { it != null }?.let { userConfigurationEntity ->
                     userProfileEntity.email.takeIf { it != null }?.let { email ->
-                        Timber.tag("HOME_VM_ROOM").i(userProfileEntity.toString())
-                        Timber.tag("HOME_VM_ROOM").i(userConfigurationEntity.toString())
                         mutableUserConfigurationUiState.update {
                             it.copy(
                                 isLoading = false,
@@ -194,20 +187,4 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
-
-    private fun fetchPendingOrders() {
-        viewModelScope.launch {
-            fireStore
-                .collection("USERS")
-                .whereEqualTo("tableNumber",7)
-                .whereEqualTo("orderStatus","PENDING")
-                .get()
-                .await()
-                .documents
-                .size
-                .also(::println)
-        }
-    }
 }
-
-internal const val HOME_VM_EXCEPTION = "Home_vm_exception"

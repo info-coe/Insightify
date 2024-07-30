@@ -47,6 +47,10 @@
 -dontwarn com.google.crypto.tink.subtle.X25519
 -dontwarn lombok.Generated
 
+-dontwarn org.slf4j.impl.StaticLoggerBinder
+-dontwarn org.slf4j.impl.StaticMDCBinder
+-dontwarn org.slf4j.impl.StaticMarkerBinder
+
 ### your config ....
 
 # Keep `Companion` object fields of serializable classes.

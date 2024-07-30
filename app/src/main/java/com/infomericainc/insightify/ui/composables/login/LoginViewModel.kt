@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.ActionCodeSettings
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.infomericainc.insightify.db.dao.UserConfigurationDao
 import com.infomericainc.insightify.db.dao.UserMetaDataDao
@@ -45,7 +46,8 @@ class LoginViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val mD5Manager: MD5Manager,
     private val userConfigurationDao: UserConfigurationDao,
-    private val userMetaDataDao: UserMetaDataDao
+    private val userMetaDataDao: UserMetaDataDao,
+    private val firebaseCrashlytics: FirebaseCrashlytics
 ) : ViewModel() {
 
     private val mutableUserRegistrationUiState: MutableStateFlow<UserRegistrationUiState> =
@@ -71,6 +73,8 @@ class LoginViewModel @Inject constructor(
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         when (throwable) {
             is IllegalArgumentException -> {
+                firebaseCrashlytics
+                    .recordException(throwable)
                 mutableUserRegistrationUiState.update {
                     it.copy(
                         isLoading = false,

@@ -2,6 +2,7 @@ package com.infomericainc.insightify.ui.composables.recentOrderRating
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.infomericainc.insightify.ui.composables.genericassistant.order.RecentOrderDto
@@ -18,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RecentOrderRatingViewModel @Inject constructor(
-    private val fireStore: FirebaseFirestore
+    private val fireStore: FirebaseFirestore,
+    private val firebaseCrashlytics: FirebaseCrashlytics
 ) : ViewModel() {
 
 
@@ -39,10 +41,9 @@ class RecentOrderRatingViewModel @Inject constructor(
     }
 
 
-    private val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-        Timber
-            .tag("EXCEPTION")
-            .d(throwable.message.toString())
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        firebaseCrashlytics
+            .recordException(throwable)
     }
 
     private fun saveAssistantConversationRatingToFirebase(rating: Int) {
@@ -132,7 +133,7 @@ class RecentOrderRatingViewModel @Inject constructor(
         var currentLikes: Int?
         var currentTotalResponses: Int?
 
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             currentLikes = fireStore
                 .collection("RATINGS")
                 .document("Item Ratings")
@@ -209,7 +210,7 @@ class RecentOrderRatingViewModel @Inject constructor(
         var currentDisLikes: Int?
         var currentTotalResponses: Int?
 
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             currentDisLikes = fireStore
                 .collection("RATINGS")
                 .document("Item Ratings")
@@ -247,7 +248,8 @@ class RecentOrderRatingViewModel @Inject constructor(
             } else {
                 val finalCurrentDisLikes = (currentDisLikes ?: return@launch) + 1
                 val finalTotalReactions = (currentTotalResponses ?: return@launch) + 1
-                val finalDisLikePercent = ((finalCurrentDisLikes.toDouble() / finalTotalReactions) * 100)
+                val finalDisLikePercent =
+                    ((finalCurrentDisLikes.toDouble() / finalTotalReactions) * 100)
                 val finalLikePercent = 100 - finalDisLikePercent
                 Timber
                     .tag("DISLIKE_PERCENT")

@@ -2,10 +2,12 @@ package com.infomericainc.insightify.ui.composables.threads
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.infomericainc.insightify.db.dao.UserProfileDao
 import com.infomericainc.insightify.db.entites.UserProfileEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,11 +22,16 @@ import javax.inject.Inject
 @HiltViewModel
 class ThreadsViewModel @Inject constructor(
     private val fireStore: FirebaseFirestore,
-    private val userProfileDao: UserProfileDao
+    private val userProfileDao: UserProfileDao,
+    private val firebaseCrashlytics: FirebaseCrashlytics
 ) : ViewModel() {
 
     private val mutableThreadsUIState = MutableStateFlow(ThreadsUIState())
     val threadsUiState = mutableThreadsUIState.asStateFlow()
+
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        firebaseCrashlytics.recordException(throwable)
+    }
 
     fun onEvent(event: ThreadsEvent) {
         when(event) {
@@ -50,7 +57,7 @@ class ThreadsViewModel @Inject constructor(
                     isFetching = true
                 )
             }
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             val userProfileEntity = getUserProfile() ?: return@launch updateThreadsErrorUiState("Unable to get User Data.")
             val email = userProfileEntity.email ?: return@launch updateThreadsErrorUiState("Unable to get email.")
             getThreadsFromFirebase(email).run {

@@ -3,6 +3,7 @@ package com.infomericainc.insightify.ui.composables.genericassistant
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -39,10 +40,12 @@ class AssistantViewModel @Inject constructor(
     private val fireStore: FirebaseFirestore,
     private val firebaseDatabase: DatabaseReference,
     private val userProfileDao: UserProfileDao,
+    private val firebaseCrashlytics: FirebaseCrashlytics
 ) : ViewModel() {
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-
+        firebaseCrashlytics
+            .recordException(throwable)
     }
 
     init {
@@ -94,7 +97,7 @@ class AssistantViewModel @Inject constructor(
 
 
     private fun addRecentOrdersToRoom(orders: Orders?) {
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             val userProfile = getUserProfile()
             val customerName: String = userProfile?.username ?: ""
             val orderID: String = generateOrderID(orders, userProfile)

@@ -14,18 +14,19 @@ sealed interface ProfileSpec {
     companion object {
         val allScreens = listOf(
             ProfileScreenSpec,
+            ProfileCustomizationScreenSpec,
             SettingsScreenSpec,
             ThreadsScreenSpec,
-            PolicyScreenSpec
+            AboutScreenSpec
         )
     }
 
-    val route : String
+    val route: String
 
-    val arguments : List<NamedNavArgument>
+    val arguments: List<NamedNavArgument>
         get() = emptyList()
 
-    val deepLinks : List<NavDeepLink>
+    val deepLinks: List<NavDeepLink>
         get() = emptyList()
 
     @Composable
@@ -35,8 +36,8 @@ sealed interface ProfileSpec {
         windowWidthSizeClass: WindowWidthSizeClass
     )
 
-    fun enterTransition() : EnterTransition
+    fun enterTransition(): EnterTransition
 
-    fun exitTransition() : ExitTransition
+    fun exitTransition(): ExitTransition
 
 }

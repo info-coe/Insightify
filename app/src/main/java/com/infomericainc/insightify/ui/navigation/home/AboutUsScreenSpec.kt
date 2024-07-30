@@ -10,7 +10,7 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
-import com.infomericainc.insightify.ui.composables.aboutus.AboutUsScreen
+import com.infomericainc.insightify.ui.composables.aboutRestaurant.AboutUsScreen
 import com.infomericainc.insightify.ui.composables.home.HomeViewModel
 import com.infomericainc.insightify.ui.composables.shared.SharedViewModel
 
@@ -32,7 +32,10 @@ data object AboutUsScreenSpec : HomeSpec {
         sharedViewModel: SharedViewModel,
         windowWidthSizeClass: WindowWidthSizeClass,
     ) {
-        AboutUsScreen(navController = navController)
+        AboutUsScreen(
+            navController = navController,
+            windowWidthSizeClass = windowWidthSizeClass
+        )
     }
 
 

@@ -2,10 +2,12 @@ package com.infomericainc.insightify.ui.composables.payment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.infomericainc.insightify.ui.composables.genericassistant.order.RecentOrderDto
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PaymentViewModel @Inject constructor(
-    private val fireStore: FirebaseFirestore
+    private val fireStore: FirebaseFirestore,
+    private val firebaseCrashlytics: FirebaseCrashlytics
 ) : ViewModel() {
 
     private val mutableRecentOrdersUiState =
@@ -29,6 +32,11 @@ class PaymentViewModel @Inject constructor(
         }
     }
 
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        firebaseCrashlytics
+            .recordException(throwable)
+    }
+
     private fun getPreviousOrders() {
         mutableRecentOrdersUiState
             .update {
@@ -37,7 +45,7 @@ class PaymentViewModel @Inject constructor(
                 )
             }
 
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             fireStore
                 .collection("ORDERS")
                 .whereEqualTo("tableNumber", 7)
@@ -46,6 +54,19 @@ class PaymentViewModel @Inject constructor(
                 .orderBy("orderTime", Query.Direction.DESCENDING)
                 .limit(1)
                 .addSnapshotListener { value, error ->
+                    if (error != null) {
+                        firebaseCrashlytics
+                            .recordException(error)
+                        mutableRecentOrdersUiState
+                            .update {
+                                it.copy(
+                                    isLoading = false,
+                                    noOrders = true,
+                                    error = error.message
+                                )
+                            }
+                        return@addSnapshotListener
+                    }
                     Timber
                         .tag("Test")
                         .d(value?.documents?.get(0).toString())

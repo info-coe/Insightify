@@ -67,6 +67,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -94,6 +95,7 @@ import com.infomericainc.insightify.ui.theme.InsightifyTheme
 import com.infomericainc.insightify.ui.theme.poppinsFontFamily
 import com.infomericainc.insightify.util.CalculateWindowSize
 import com.infomericainc.insightify.util.CompactThemedPreviewProvider
+import com.infomericainc.insightify.util.Constants
 import com.infomericainc.insightify.util.MediumThemedPreviewProvider
 import com.infomericainc.insightify.util.redirectToWebsite
 import com.intuit.sdp.R.dimen as DP
@@ -159,7 +161,7 @@ private fun RestaurantHomeScreenBody(
             }
 
             AnimatedVisibility(
-                visible = isRecomposed,
+                visible = !isRecomposed,
                 enter = fadeIn(tween(500))
                         + slideInVertically(tween(800), initialOffsetY = { -it / 8 })
                         + scaleIn(initialScale = .8f, transformOrigin = TransformOrigin.Center),
@@ -187,6 +189,7 @@ private fun CompactRestaurantHomeScreenContent(
     val surfaceColor = MaterialTheme.colorScheme.surface
     val isInDarkMode = isSystemInDarkTheme()
     val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
 
 
     var homeController by remember {
@@ -500,14 +503,8 @@ private fun CompactRestaurantHomeScreenContent(
                                 .clip(MaterialTheme.shapes.large)
                                 .background(MaterialTheme.colorScheme.secondaryContainer)
                                 .clickable {
-                                    Intent(Intent.ACTION_MAIN).also {
-                                        it.`package` = "com.google.android.googlequicksearchbox"
-                                        try {
-                                            context.startActivity(it)
-                                        } catch (e: ActivityNotFoundException) {
-                                            context.makeToast("Unable to launch playStore")
-                                        }
-                                    }
+                                    uriHandler
+                                        .openUri(Constants.PLAY_STORE_LINK)
                                 }
                                 .padding(dimensionResource(id = com.intuit.sdp.R.dimen._12sdp)),
                             contentAlignment = Alignment.Center
