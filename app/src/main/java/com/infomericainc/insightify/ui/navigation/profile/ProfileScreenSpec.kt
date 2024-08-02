@@ -38,7 +38,8 @@ data object ProfileScreenSpec : ProfileSpec {
         val userProfileUiState by profileViewModel.recentOrderUiState.collectAsStateWithLifecycle()
         ProfileScreen(
             navController = navController,
-            userProfileUiState = userProfileUiState
+            userProfileUiState = userProfileUiState,
+            widthSizeClass = windowWidthSizeClass
         )
     }
 

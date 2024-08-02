@@ -10,10 +10,11 @@ import com.google.firebase.firestore.SetOptions
 import com.infomericainc.insightify.db.dao.UserProfileDao
 import com.infomericainc.insightify.db.entites.UserProfileEntity
 import com.infomericainc.insightify.manager.OpenAiManager
-import com.infomericainc.insightify.manager.PaymentManager
+import com.infomericainc.insightify.manager.PreferencesManager
 import com.infomericainc.insightify.ui.composables.genericassistant.order.Orders
 import com.infomericainc.insightify.ui.composables.genericassistant.order.RecentOrderDto
 import com.infomericainc.insightify.util.Constants
+import com.infomericainc.insightify.util.Constants.TABLE_NUMBER
 import com.infomericainc.insightify.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -40,7 +41,8 @@ class AssistantViewModel @Inject constructor(
     private val fireStore: FirebaseFirestore,
     private val firebaseDatabase: DatabaseReference,
     private val userProfileDao: UserProfileDao,
-    private val firebaseCrashlytics: FirebaseCrashlytics
+    private val firebaseCrashlytics: FirebaseCrashlytics,
+    private val preferencesManager: PreferencesManager
 ) : ViewModel() {
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -52,6 +54,7 @@ class AssistantViewModel @Inject constructor(
         Timber
             .tag(ASSISTANT_VIEW_MODEL)
             .i("Created")
+        getConversationLimit()
     }
 
     override fun onCleared() {
@@ -78,6 +81,13 @@ class AssistantViewModel @Inject constructor(
         MutableStateFlow(ConversationDeletionUiState())
     val conversationDeletionUiState = mutableConversationDeletionUiState.asStateFlow()
 
+    private val mutableConversationRestrictionUIState =
+        MutableStateFlow(ConversationRestrictionUIState())
+    val conversationRestrictionUIState = mutableConversationRestrictionUIState.asStateFlow()
+
+    private var conversationLimit = 0
+
+
     fun onEvent(event: AssistantEvent) {
         when (event) {
             is AssistantEvent.GetPreviousConversationFromAssistant -> fetchUserThreadFirebase()
@@ -88,11 +98,26 @@ class AssistantViewModel @Inject constructor(
         }
     }
 
+    private fun getConversationLimit() {
+        viewModelScope.launch(exceptionHandler) {
+            conversationLimit = getConversationRestrictionLimit() ?: 0
+        }
+    }
+
     private fun addMessageToConversation(conversationModel: AssistantConversationModel) {
         Timber
             .tag(ASSISTANT_VIEW_MODEL)
             .d("conversation model added : $conversationModel ")
         mutableConversationUIState.value += conversationModel
+        viewModelScope.launch {
+            mutableConversationUIState.value.sortedBy { it.isFromUser }.count().also {
+                if (it >= conversationLimit) {
+                    mutableConversationRestrictionUIState.update { uiState ->
+                        uiState.copy(isLimitReached = true)
+                    }
+                }
+            }
+        }
     }
 
 
@@ -108,13 +133,17 @@ class AssistantViewModel @Inject constructor(
             val desert = orders?.OrderData?.Desert?.map { mapOf(it.name to it.price) }
             val orderStatus = "PENDING"
             val paymentStatus = "PENDING"
-            val paymentType : String? = null
+            val paymentType: String? = null
             val orderAcceptedTime: Timestamp? = null
             val orderFinishedTime: Timestamp? = null
             val rejectReason: String? = null
             val taxes: Double? = orders?.OrderData?.Total?.GST
             val totalAmount: Double = orders?.OrderData?.Total?.GrandTotal ?: 0.0
             val amount: Double = orders?.OrderData?.Total?.Amount ?: 0.0
+            val tableNumber = preferencesManager.getInt(TABLE_NUMBER, 0)
+            if (tableNumber == 0) {
+                return@launch
+            }
             val recentOrderDto = RecentOrderDto(
                 orderID = orderID,
                 amount = mapOf(
@@ -131,7 +160,7 @@ class AssistantViewModel @Inject constructor(
                     "main" to main,
                     "desert" to desert,
                 ),
-                tableNumber = 7,
+                tableNumber = tableNumber,
                 orderStatus = orderStatus,
                 paymentStatus = paymentStatus,
                 paymentType = paymentType,
@@ -269,6 +298,18 @@ class AssistantViewModel @Inject constructor(
         }
     }
 
+
+    private suspend fun getConversationRestrictionLimit(): Int? {
+        return withContext(Dispatchers.IO) {
+            firebaseDatabase
+                .child("RESTRICTIONS")
+                .child("FREE_CONVERSATIONS_LIMIT")
+                .get()
+                .await()
+                .getValue(Int::class.java)
+        }
+    }
+
     private fun getPreviousConversationFromAssistant() {
         viewModelScope.launch {
             openAiManager
@@ -294,6 +335,16 @@ class AssistantViewModel @Inject constructor(
                                 }
                             mutableConversationUIState.update {
                                 it + previousConversation.data as List<AssistantConversationModel>
+                            }
+                            conversationLimit.takeIf { it != 0 }?.let { limit ->
+                                mutableConversationUIState.value.map { it.isFromUser }.count()
+                                    .apply {
+                                        if (this >= limit) {
+                                            mutableConversationRestrictionUIState.update {
+                                                it.copy(isLimitReached = true)
+                                            }
+                                        }
+                                    }
                             }
                         }
 

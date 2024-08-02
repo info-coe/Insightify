@@ -34,8 +34,8 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.infomericainc.insightify.ui.composables.about.varients.CompactAboutScreenContent
-import com.infomericainc.insightify.ui.composables.about.varients.MediumAboutPolicyScreenContent
+import com.infomericainc.insightify.ui.composables.about.variants.CompactAboutScreenContent
+import com.infomericainc.insightify.ui.composables.about.variants.MediumAboutPolicyScreenContent
 import com.infomericainc.insightify.ui.theme.InsightifyTheme
 import com.infomericainc.insightify.ui.theme.poppinsFontFamily
 import com.infomericainc.insightify.util.CalculateWindowSize

@@ -38,8 +38,8 @@ import androidx.navigation.navigation
 import com.infomericainc.insightify.ui.composables.home.HomeViewModel
 import com.infomericainc.insightify.ui.composables.shared.SharedViewModel
 import com.infomericainc.insightify.ui.navigation.Graphs
-import com.infomericainc.insightify.ui.navigation.downloads.DownloadScreens
-import com.infomericainc.insightify.ui.navigation.downloads.DownloadsSpec
+import com.infomericainc.insightify.ui.navigation.guide.GuideScreens
+import com.infomericainc.insightify.ui.navigation.guide.GuideSpec
 import com.infomericainc.insightify.ui.navigation.home.HomeScreens
 import com.infomericainc.insightify.ui.navigation.home.HomeSpec
 import com.infomericainc.insightify.ui.navigation.profile.ProfileScreens
@@ -84,7 +84,7 @@ private fun BottomNavigationBody(
 
     val canShownBottomBar = navDestination?.route in listOf(
         HomeScreens.HomeScreen.route,
-        DownloadScreens.DownloadsScreen.route,
+        GuideScreens.GuideScreen.route,
         ProfileScreens.ProfileScreen.route,
     )
 
@@ -153,8 +153,8 @@ private fun NavigationScreenContent(
         modifier = Modifier.padding(paddingValues),
     ) {
         homeGraph(bottomNavController, homeViewModel, sharedViewModel, windowWidthSizeClass)
-        downloadsGraph(bottomNavController)
-        profileGraph(bottomNavController,windowWidthSizeClass)
+        downloadsGraph(bottomNavController, windowWidthSizeClass)
+        profileGraph(bottomNavController, windowWidthSizeClass)
     }
 }
 
@@ -186,18 +186,22 @@ fun NavGraphBuilder.homeGraph(
     }
 }
 
-fun NavGraphBuilder.downloadsGraph(navController: NavController) {
+fun NavGraphBuilder.downloadsGraph(
+    navController: NavController,
+    windowWidthSizeClass: WindowWidthSizeClass
+) {
     navigation(
-        route = Graphs.DOWNLOADS_GRAPH,
-        startDestination = DownloadScreens.DownloadsScreen.route
+        route = Graphs.GUIDE_GRAPH,
+        startDestination = GuideScreens.GuideScreen.route
     ) {
-        DownloadsSpec.allScreens.forEach { downloadsScreenSpec ->
+        GuideSpec.allScreens.forEach { downloadsScreenSpec ->
             composable(
                 route = downloadsScreenSpec.route
             ) {
                 downloadsScreenSpec.Content(
                     navController = navController,
-                    navBackStackEntry = it
+                    navBackStackEntry = it,
+                    windowWidthSizeClass = windowWidthSizeClass
                 )
             }
         }

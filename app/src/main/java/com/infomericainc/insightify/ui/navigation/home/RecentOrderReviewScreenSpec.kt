@@ -47,6 +47,7 @@ data object RecentOrderReviewScreenSpec : HomeSpec {
         RecentOrderReviewScreen(
             navController = navController,
             recentOrderUiState = recentOrders,
+            windowWidthSizeClass = windowWidthSizeClass,
             onEvent = recentOrderRatingViewModel::onTriggerEvent
         )
     }

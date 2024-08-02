@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.infomericainc.insightify.manager.PreferencesManager
 import com.infomericainc.insightify.ui.composables.genericassistant.order.RecentOrderDto
+import com.infomericainc.insightify.util.Constants.TABLE_NUMBER
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PaymentViewModel @Inject constructor(
     private val fireStore: FirebaseFirestore,
-    private val firebaseCrashlytics: FirebaseCrashlytics
+    private val firebaseCrashlytics: FirebaseCrashlytics,
+    private val preferencesManager: PreferencesManager
 ) : ViewModel() {
 
     private val mutableRecentOrdersUiState =
@@ -46,9 +49,20 @@ class PaymentViewModel @Inject constructor(
             }
 
         viewModelScope.launch(exceptionHandler) {
+            val tableNumber = preferencesManager
+                .getInt(TABLE_NUMBER, 0)
+            if (tableNumber == 0) {
+                mutableRecentOrdersUiState
+                    .update {
+                        it.copy(
+                            error = "Table number not set"
+                        )
+                    }
+                return@launch
+            }
             fireStore
                 .collection("ORDERS")
-                .whereEqualTo("tableNumber", 7)
+                .whereEqualTo("tableNumber", tableNumber)
                 .whereEqualTo("orderStatus", "ACCEPTED")
                 .orderBy("orderStatus", Query.Direction.DESCENDING)
                 .orderBy("orderTime", Query.Direction.DESCENDING)

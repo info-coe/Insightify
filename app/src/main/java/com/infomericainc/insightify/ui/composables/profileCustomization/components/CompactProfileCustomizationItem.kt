@@ -80,7 +80,7 @@ fun CompactProfileCustomizationItem(
         }
         if (showNextIcons) {
             IconButton(
-                onClick = { },
+                onClick = { onItemClick() },
                 modifier = Modifier
                     .weight(.2f)
             ) {

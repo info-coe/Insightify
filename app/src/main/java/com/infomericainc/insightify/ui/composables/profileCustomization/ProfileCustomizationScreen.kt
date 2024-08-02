@@ -22,7 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.navigation.NavController
-import com.infomericainc.insightify.ui.composables.profileCustomization.varients.CompactProfileCustomizationContent
+import com.infomericainc.insightify.ui.components.placeholders.UnSupportedResolutionPlaceHolder
+import com.infomericainc.insightify.ui.composables.profileCustomization.variants.CompactProfileCustomizationContent
+import com.infomericainc.insightify.ui.composables.profileCustomization.variants.MediumProfileCustomizationContent
 import com.infomericainc.insightify.ui.theme.InsightifyTheme
 import com.infomericainc.insightify.util.CalculateWindowSize
 
@@ -44,10 +46,14 @@ fun ProfileCustomizationScreen(
                 )
             },
             mediumContent = {
-
+                MediumProfileCustomizationContent(
+                    paddingValues = it,
+                    navController = navController,
+                    userProfileUIState = userProfileUIState
+                )
             },
             unSupportedContent = {
-
+                UnSupportedResolutionPlaceHolder()
             }
         )
     }
@@ -60,7 +66,7 @@ fun ProfileCustomizationScreenBody(
     InsightifyTheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface,
         ) {
             var isRecomposed by remember {
                 mutableStateOf(false)

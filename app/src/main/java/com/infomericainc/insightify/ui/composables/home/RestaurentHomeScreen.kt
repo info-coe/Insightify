@@ -83,6 +83,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.logEvent
+import com.google.firebase.ktx.Firebase
 import com.infomericainc.insightify.R
 import com.infomericainc.insightify.extension.makeToast
 import com.infomericainc.insightify.ui.components.InstfyLottie
@@ -161,7 +165,7 @@ private fun RestaurantHomeScreenBody(
             }
 
             AnimatedVisibility(
-                visible = !isRecomposed,
+                visible = isRecomposed,
                 enter = fadeIn(tween(500))
                         + slideInVertically(tween(800), initialOffsetY = { -it / 8 })
                         + scaleIn(initialScale = .8f, transformOrigin = TransformOrigin.Center),
@@ -190,6 +194,9 @@ private fun CompactRestaurantHomeScreenContent(
     val isInDarkMode = isSystemInDarkTheme()
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
+    val analytics by remember {
+        mutableStateOf(Firebase.analytics)
+    }
 
 
     var homeController by remember {
@@ -201,6 +208,12 @@ private fun CompactRestaurantHomeScreenContent(
             onEvent(HomeEvent.FetchUserConfigurationFromRoom)
             onEvent(HomeEvent.FetchUserProfileFromRoom)
             homeController = true
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "home_screen_compact")
         }
     }
 
@@ -690,7 +703,10 @@ private fun MediumRestaurantHomeScreenContent(
     val surfaceColor = MaterialTheme.colorScheme.surface
     val isInDarkMode = isSystemInDarkTheme()
     val context = LocalContext.current
-
+    val uriHandler = LocalUriHandler.current
+    val analytics by remember {
+        mutableStateOf(Firebase.analytics)
+    }
 
     var homeController by rememberSaveable {
         mutableStateOf(false)
@@ -701,6 +717,13 @@ private fun MediumRestaurantHomeScreenContent(
             onEvent(HomeEvent.FetchUserConfigurationFromRoom)
             onEvent(HomeEvent.FetchUserProfileFromRoom)
             homeController = true
+        }
+    }
+
+
+    LaunchedEffect(Unit) {
+        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "home_screen_medium")
         }
     }
 
@@ -896,7 +919,7 @@ private fun MediumRestaurantHomeScreenContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .fillMaxHeight()
-                            .blur(1.dp),
+                            .blur(2.dp),
                         contentScale = ContentScale.Crop,
                     )
                     Box(
@@ -1020,14 +1043,7 @@ private fun MediumRestaurantHomeScreenContent(
                             .clip(MaterialTheme.shapes.large)
                             .background(MaterialTheme.colorScheme.secondaryContainer)
                             .clickable {
-                                Intent(Intent.ACTION_MAIN).also {
-                                    it.`package` = "com.google.android.googlequicksearchbox"
-                                    try {
-                                        context.startActivity(it)
-                                    } catch (e: ActivityNotFoundException) {
-                                        context.makeToast("Unable to launch playStore")
-                                    }
-                                }
+                                uriHandler.openUri(Constants.PLAY_STORE_LINK)
                             }
                             .height(dimensionResource(id = com.intuit.sdp.R.dimen._35sdp)),
                         contentAlignment = Alignment.Center

@@ -9,6 +9,8 @@ import com.google.firebase.firestore.Query
 import com.infomericainc.insightify.api.StripeRepository
 import com.infomericainc.insightify.api.dto.CustomerDto
 import com.infomericainc.insightify.db.dao.UserProfileDao
+import com.infomericainc.insightify.manager.PreferencesManager
+import com.infomericainc.insightify.util.Constants.TABLE_NUMBER
 import com.infomericainc.insightify.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -27,7 +29,8 @@ class TransactionViewModel @Inject constructor(
     private val stripeRepository: StripeRepository,
     private val userProfileDao: UserProfileDao,
     private val fireStore: FirebaseFirestore,
-    private val firebaseCrashlytics: FirebaseCrashlytics
+    private val firebaseCrashlytics: FirebaseCrashlytics,
+    private val preferencesManager: PreferencesManager
 ) : ViewModel() {
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -199,9 +202,20 @@ class TransactionViewModel @Inject constructor(
                 )
             }
         viewModelScope.launch(exceptionHandler) {
+            val tableNumber = preferencesManager
+                .getInt(TABLE_NUMBER, 0)
+            if (tableNumber == 0) {
+                mutableTransactionUpdateUIState
+                    .update {
+                        it.copy(
+                            error = "Table number not set"
+                        )
+                    }
+                return@launch
+            }
             val ref = fireStore
                 .collection("ORDERS")
-                .whereEqualTo("tableNumber", 7)
+                .whereEqualTo("tableNumber", tableNumber)
                 .whereEqualTo("orderStatus", "ACCEPTED")
                 .orderBy("orderStatus", Query.Direction.DESCENDING)
                 .orderBy("orderTime", Query.Direction.DESCENDING)

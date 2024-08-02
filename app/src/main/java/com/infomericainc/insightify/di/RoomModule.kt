@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import com.infomericainc.insightify.db.InsightifyDatabase
 import com.infomericainc.insightify.db.dao.UserConfigurationDao
-import com.infomericainc.insightify.db.dao.UserMetaDataDao
 import com.infomericainc.insightify.db.dao.UserProfileDao
 import dagger.Module
 import dagger.Provides
@@ -44,15 +43,5 @@ object RoomModule {
     ) : UserConfigurationDao {
         return insightifyDatabase.userConfigurationDao()
     }
-
-    @Provides
-    @Singleton
-    fun provideUserMetaDataDao(
-        insightifyDatabase: InsightifyDatabase
-    ) : UserMetaDataDao {
-        return insightifyDatabase.userMetaDataDao()
-    }
-
-
 
 }

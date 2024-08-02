@@ -22,21 +22,18 @@ data class UserProfile(
 data class UserConfiguration(
     val user_id: String? = null,
     val premium_user: Boolean? = null,
-    val free_sessions: Int? = null
+    val free_sessions: Int? = null,
+    val registered_table_number : Int? = null
 )
 
-@Keep
-data class UserMetaData(
-    val user_profile_hash: String? = null,
-    val user_configuration_hash: String? = null,
-)
 
 
 @Keep
 data class UserConfigurationDto(
     val userId: String? = null,
     val premiumUser: Boolean? = null,
-    val freeSessions: Int? = null
+    val freeSessions: Int? = null,
+    val registeredTableNumber : Int? = null
 )
 
 @Keep
@@ -70,13 +67,7 @@ fun UserConfiguration.toUserConfigurationDto() : UserConfigurationDto {
     return UserConfigurationDto(
         userId = user_id,
         premiumUser = premium_user,
-        freeSessions = free_sessions
-    )
-}
-
-fun UserMetaData.toUserMetaDataDto() : UserMetaDataDto {
-    return UserMetaDataDto(
-        user_profile_hash,
-        user_configuration_hash,
+        freeSessions = free_sessions,
+        registeredTableNumber = registered_table_number
     )
 }

@@ -38,7 +38,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.infomericainc.insightify.ui.components.placeholders.UnSupportedResolutionPlaceHolder
-import com.infomericainc.insightify.ui.composables.threads.varients.CompactThreadsScreenContent
+import com.infomericainc.insightify.ui.composables.threads.variants.CompactThreadsScreenContent
+import com.infomericainc.insightify.ui.composables.threads.variants.MediumThreadsScreenContent
 import com.infomericainc.insightify.ui.theme.InsightifyTheme
 import com.infomericainc.insightify.ui.theme.poppinsFontFamily
 import com.infomericainc.insightify.util.CalculateWindowSize
@@ -65,7 +66,12 @@ fun ThreadsScreen(
                 )
             },
             mediumContent = {
-
+                MediumThreadsScreenContent(
+                    paddingValues = it,
+                    navController = navController,
+                    threadsUIState = threadsUIState,
+                    onThreadsEvent = onThreadsEvent
+                )
             },
             unSupportedContent = { UnSupportedResolutionPlaceHolder() }
         )

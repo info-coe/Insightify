@@ -20,7 +20,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.analytics
 import com.infomericainc.insightify.ui.composables.bottomnavigation.BottomNavigationScreen
 import com.infomericainc.insightify.ui.navigation.Graphs
 import com.infomericainc.insightify.ui.navigation.on_boarding.OnBoardingScreenSpec

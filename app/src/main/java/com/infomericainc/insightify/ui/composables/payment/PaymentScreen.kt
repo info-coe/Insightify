@@ -25,8 +25,8 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.infomericainc.insightify.ui.components.placeholders.UnSupportedResolutionPlaceHolder
-import com.infomericainc.insightify.ui.composables.payment.varient.CompactPaymentScreen
-import com.infomericainc.insightify.ui.composables.payment.varient.MediumPaymentScreen
+import com.infomericainc.insightify.ui.composables.payment.variant.CompactPaymentScreen
+import com.infomericainc.insightify.ui.composables.payment.variant.MediumPaymentScreen
 import com.infomericainc.insightify.ui.theme.InsightifyTheme
 import com.infomericainc.insightify.util.CalculateWindowSize
 

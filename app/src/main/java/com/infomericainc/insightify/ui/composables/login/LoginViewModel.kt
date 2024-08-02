@@ -2,29 +2,22 @@ package com.infomericainc.insightify.ui.composables.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.ActionCodeSettings
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.infomericainc.insightify.db.dao.UserConfigurationDao
-import com.infomericainc.insightify.db.dao.UserMetaDataDao
 import com.infomericainc.insightify.db.dao.UserProfileDao
 import com.infomericainc.insightify.db.entites.UserConfigurationEntity
-import com.infomericainc.insightify.db.entites.UserMetaDataEntity
 import com.infomericainc.insightify.db.entites.UserProfileEntity
-import com.infomericainc.insightify.manager.MD5Manager
+import com.infomericainc.insightify.manager.PreferencesManager
 import com.infomericainc.insightify.ui.composables.login.google_sign_in.LoginResult
 import com.infomericainc.insightify.ui.composables.login.google_sign_in.UserConfiguration
 import com.infomericainc.insightify.ui.composables.login.google_sign_in.UserConfigurationDto
-import com.infomericainc.insightify.ui.composables.login.google_sign_in.UserMetaData
-import com.infomericainc.insightify.ui.composables.login.google_sign_in.UserMetaDataDto
 import com.infomericainc.insightify.ui.composables.login.google_sign_in.UserProfile
 import com.infomericainc.insightify.ui.composables.login.google_sign_in.UserProfileDto
 import com.infomericainc.insightify.ui.composables.login.google_sign_in.toUserConfigurationDto
-import com.infomericainc.insightify.ui.composables.login.google_sign_in.toUserMetaDataDto
 import com.infomericainc.insightify.ui.composables.login.google_sign_in.toUserProfileDto
 import com.infomericainc.insightify.util.Constants
-import com.infomericainc.insightify.util.sendEmail
+import com.infomericainc.insightify.util.Constants.TABLE_NUMBER
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -38,16 +31,15 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val fireStore: FirebaseFirestore,
     private val userProfileDao: UserProfileDao,
-    private val firebaseAuth: FirebaseAuth,
-    private val mD5Manager: MD5Manager,
     private val userConfigurationDao: UserConfigurationDao,
-    private val userMetaDataDao: UserMetaDataDao,
-    private val firebaseCrashlytics: FirebaseCrashlytics
+    private val firebaseCrashlytics: FirebaseCrashlytics,
+    private val preferencesManager: PreferencesManager
 ) : ViewModel() {
 
     private val mutableUserRegistrationUiState: MutableStateFlow<UserRegistrationUiState> =
@@ -67,9 +59,13 @@ class LoginViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        Timber.tag("LOGIN_VM").i(viewModelScope.coroutineContext.job.children.toList().size.toString().plus(" - Active jobs"))
+        Timber.tag("LOGIN_VM").i(
+            viewModelScope.coroutineContext.job.children.toList().size.toString()
+                .plus(" - Active jobs")
+        )
         Timber.tag("LOGIN_VM").i("Cleared")
     }
+
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         when (throwable) {
             is IllegalArgumentException -> {
@@ -104,9 +100,13 @@ class LoginViewModel @Inject constructor(
              */
 
             val userDataResult = fireStore.collection(Constants.UserProfilePath.USERS.name)
-                .document(loginResult.data?.email ?: throw IllegalArgumentException("Email is null"))
+                .document(
+                    loginResult.data?.email ?: throw IllegalArgumentException("Email is null")
+                )
                 .collection(Constants.UserProfilePath.USER_DATA.name)
-                .document(loginResult.data.user_id ?: throw IllegalArgumentException("User ID is null"))
+                .document(
+                    loginResult.data.user_id ?: throw IllegalArgumentException("User ID is null")
+                )
                 .get()
                 .await()
                 .toObject(UserProfile::class.java)
@@ -118,17 +118,19 @@ class LoginViewModel @Inject constructor(
              * UserProfile,UserConfiguration to room and update our ui state.
              */
 
-            //Todo: discuss with team about this issues what if any filed is missing
             userDataResult?.let { userData ->
                 userData.email?.takeIf { it.isNotEmpty() }?.let { _ ->
                     userData.user_id?.takeIf { it.isNotEmpty() }?.let { _ ->
                         // Getting the user preferences
                         getUserConfigurationFromFirebase(userData)?.run {
-                            if (free_sessions != null) {
+                            if (registered_table_number != null) {
                                 // Saving userData to Room
                                 saveUserProfileToRoom(userData.toUserProfileDto())
                                 // Saving userConfigurationToRoom
                                 saveUserConfigurationToRoom(toUserConfigurationDto())
+
+                                preferencesManager
+                                    .saveInt(TABLE_NUMBER, registered_table_number)
                                 // Updating the state
                                 mutableUserRegistrationUiState.update {
                                     it.copy(
@@ -137,18 +139,17 @@ class LoginViewModel @Inject constructor(
                                     )
                                 }
                             } else {
-                                throw IllegalArgumentException("Premium user is null")
+                                throw IllegalArgumentException("Registered Table number is null")
                             }
                         }
                     } ?: throw IllegalArgumentException("user id is empty")
                 } ?: throw IllegalArgumentException("email is empty")
             } ?: run {
                 registerUserDataToFireStore(
-                    loginResult.data,
-                    onSuccess = { userDataDto, userConfigurationDto, userMetaData ->
+                    userData = loginResult.data,
+                    onSuccess = { userDataDto, userConfigurationDto ->
                         saveUserProfileToRoom(userDataDto)
                         saveUserConfigurationToRoom(userConfigurationDto)
-                        saveUserMetaDataToRoom(userMetaData.toUserMetaDataDto())
                         mutableUserRegistrationUiState.update {
                             it.copy(
                                 isLoading = false,
@@ -182,20 +183,16 @@ class LoginViewModel @Inject constructor(
 
     private suspend fun registerUserDataToFireStore(
         userData: UserProfile,
-        onSuccess: suspend (UserProfileDto, UserConfigurationDto,UserMetaData) -> Unit
+        onSuccess: suspend (UserProfileDto, UserConfigurationDto) -> Unit
     ) {
-
+        val generatedTableNumber: Int = Random.nextInt(0, 1000)
         val userConfigurationStats = UserConfiguration(
             user_id = userData.user_id,
             premium_user = false,
-            free_sessions = 3
+            free_sessions = 3,
+            registered_table_number = generatedTableNumber
         )
 
-
-        val userMetaData = UserMetaData(
-            user_profile_hash = mD5Manager.computeMD5Hash(data = listOf(userData.toString())),
-            user_configuration_hash = mD5Manager.computeMD5Hash(data = listOf(userConfigurationStats.toString()))
-        )
 
         withContext(Dispatchers.IO) {
             fireStore.collection(Constants.UserProfilePath.USERS.name)
@@ -212,12 +209,8 @@ class LoginViewModel @Inject constructor(
                 .set(userConfigurationStats)
                 .await()
 
-            fireStore.collection(Constants.UserMetaDataPath.USERS.name)
-                .document(userData.email)
-                .collection(Constants.UserMetaDataPath.META_DATA.name)
-                .document(userData.user_id)
-                .set(userMetaData)
-                .await()
+            preferencesManager
+                .saveInt(TABLE_NUMBER, generatedTableNumber)
 
 //            withContext(Dispatchers.IO) {
 //                sendEmail(
@@ -229,7 +222,10 @@ class LoginViewModel @Inject constructor(
 //                )
 //            }
         }
-        onSuccess(userData.toUserProfileDto(),userConfigurationStats.toUserConfigurationDto(),userMetaData)
+        onSuccess(
+            userData.toUserProfileDto(),
+            userConfigurationStats.toUserConfigurationDto()
+        )
     }
 
     private suspend fun saveUserProfileToRoom(userDataDto: UserProfileDto) {
@@ -237,7 +233,7 @@ class LoginViewModel @Inject constructor(
             with(userDataDto) {
                 userProfileDao.saveUserProfile(
                     UserProfileEntity(
-                        userID = userId ?: "",
+                        userID = userId!!,
                         username = username,
                         email = email,
                         profileUrl = profileUrl,
@@ -259,9 +255,10 @@ class LoginViewModel @Inject constructor(
             with(userConfigurationDto) {
                 userConfigurationDao.saveUserConfiguration(
                     userConfigurationEntity = UserConfigurationEntity(
-                        userID = userId ?: "",
+                        userID = userId!!,
                         freeSessions = freeSessions,
-                        premiumUser = premiumUser
+                        premiumUser = premiumUser,
+                        registeredTableNumber = registeredTableNumber
                     )
                 ).also { result ->
                     if (result > 0) {
@@ -274,22 +271,4 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private suspend fun saveUserMetaDataToRoom(userMetaDataDto: UserMetaDataDto) {
-        withContext(Dispatchers.IO) {
-            with(userMetaDataDto) {
-                userMetaDataDao.saveUserMetaData(
-                    userMetaDataEntity = UserMetaDataEntity(
-                        userProfileHash = userProfileHash,
-                        userConfigurationHash = userConfigurationHash
-                    )
-                ).also { result ->
-                    if (result > 0) {
-                        Timber.tag("LOGIN_VM").i("user meta data inserted to room")
-                    } else {
-                        Timber.tag("LOGIN_VM").e("user meta data insertion failed")
-                    }
-                }
-            }
-        }
-    }
 }

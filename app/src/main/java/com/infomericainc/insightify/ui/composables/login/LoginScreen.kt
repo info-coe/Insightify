@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.infomericainc.insightify.ui.components.placeholders.UnSupportedResolutionPlaceHolder
-import com.infomericainc.insightify.ui.composables.login.varinets.CompactLoginScreenContent
-import com.infomericainc.insightify.ui.composables.login.varinets.MediumLoginScreenContent
+import com.infomericainc.insightify.ui.composables.login.variants.CompactLoginScreenContent
+import com.infomericainc.insightify.ui.composables.login.variants.MediumLoginScreenContent
 import com.infomericainc.insightify.ui.theme.InsightifyTheme
 import com.infomericainc.insightify.util.CalculateWindowSize
 

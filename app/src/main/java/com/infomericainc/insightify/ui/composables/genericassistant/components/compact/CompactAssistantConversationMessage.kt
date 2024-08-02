@@ -1,8 +1,10 @@
 package com.infomericainc.insightify.ui.composables.genericassistant.components.compact
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,9 +23,14 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -52,6 +59,7 @@ fun CompactAssistantConversationMessage(
     modifier: Modifier = Modifier,
     assistantConversationModel: AssistantConversationModel,
     onItemClick: (Item?) -> Unit,
+    onItemLongClick: (Item?) -> Unit,
     onMenuTap: () -> Unit,
     onMenuOrderConfirmation: (Orders?) -> Unit
 ) {
@@ -159,10 +167,14 @@ fun CompactAssistantConversationMessage(
 
                 isMenu != null -> AssistantMenuMessage(
                     modifier,
-                    isMenu
-                ) {
-                    onItemClick(it)
-                }
+                    isMenu,
+                    onItemClick = {
+                        onItemClick(it)
+                    },
+                    onItemLongClick = {
+                        onItemLongClick(it)
+                    }
+                )
 
             }
         } else {
@@ -621,8 +633,17 @@ fun AssistantOrderMessage(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AssistantMenuMessage(modifier: Modifier = Modifier, menu: Menu, onItemClick: (Item?) -> Unit) {
+fun AssistantMenuMessage(
+    modifier: Modifier = Modifier,
+    menu: Menu,
+    onItemClick: (Item?) -> Unit,
+    onItemLongClick: (Item?) -> Unit
+) {
+    var onLongPressed by remember {
+        mutableStateOf(false)
+    }
     Row(
         modifier = Modifier
             .padding(start = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp))
@@ -707,122 +728,130 @@ fun AssistantMenuMessage(modifier: Modifier = Modifier, menu: Menu, onItemClick:
                                 MaterialTheme.colorScheme.onSurface
                             }
                             val isMostOrdered = item.itemOfTheDay ?: false
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(
-                                        start = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp),
-                                        bottom = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)
-                                    )
-                                    .clip(MaterialTheme.shapes.large)
-                                    .background(
-                                        cardColor
-                                    )
-                                    .clickable {
-                                        onItemClick(menu.menuData.items[index])
-                                    }
-                                    .padding(
-                                        horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp),
-                                        vertical = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)
-                                    )
-                            ) {
-                                Row {
-                                    Text(
-                                        text = (item.itemNumber.toString().plus(". ")),
-                                        fontFamily = poppinsFontFamily,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = contentColor
-                                    )
-                                    Text(
-                                        text = itemName,
-                                        fontFamily = poppinsFontFamily,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = contentColor,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)))
-                                if (item.itemDescription != null) {
-                                    if (item.itemDescription.isNotEmpty()) {
+                            Column {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(
+                                            start = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp),
+                                            bottom = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)
+                                        )
+                                        .clip(MaterialTheme.shapes.large)
+                                        .background(
+                                            cardColor
+                                        )
+                                        .combinedClickable(
+                                            enabled = true,
+                                            onLongClick = {
+                                                onItemLongClick(menu.menuData.items[index])
+                                            },
+                                            onClick = {
+                                                onItemClick(menu.menuData.items[index])
+                                            }
+                                        )
+                                        .padding(
+                                            horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp),
+                                            vertical = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)
+                                        )
+                                ) {
+                                    Row {
                                         Text(
-                                            text = item.itemDescription,
+                                            text = (item.itemNumber.toString().plus(". ")),
                                             fontFamily = poppinsFontFamily,
-                                            fontWeight = FontWeight.Normal,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = contentColor
+                                        )
+                                        Text(
+                                            text = itemName,
+                                            fontFamily = poppinsFontFamily,
+                                            fontWeight = FontWeight.SemiBold,
                                             color = contentColor,
-                                            fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp,
-                                            lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._16ssp).value.sp,
                                             modifier = Modifier
-                                                .alpha(.8f)
-                                                .padding(end = 20.dp)
+                                                .fillMaxWidth()
                                         )
                                     }
-                                }
-                                Spacer(modifier = Modifier.height(dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)))
-                                if (item.amount != null) {
-                                    if (item.amount != 0.0) {
-                                        Row(
-                                            modifier = Modifier,
-                                            horizontalArrangement = Arrangement.spacedBy(
-                                                dimensionResource(
-                                                    id = com.intuit.sdp.R.dimen._3sdp
+                                    Spacer(modifier = Modifier.height(dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)))
+                                    if (item.itemDescription != null) {
+                                        if (item.itemDescription.isNotEmpty()) {
+                                            Text(
+                                                text = item.itemDescription,
+                                                fontFamily = poppinsFontFamily,
+                                                fontWeight = FontWeight.Normal,
+                                                color = contentColor,
+                                                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp,
+                                                lineHeight = dimensionResource(id = com.intuit.ssp.R.dimen._16ssp).value.sp,
+                                                modifier = Modifier
+                                                    .alpha(.8f)
+                                                    .padding(end = 20.dp)
+                                            )
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.height(dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)))
+                                    if (item.amount != null) {
+                                        if (item.amount != 0.0) {
+                                            Row(
+                                                modifier = Modifier,
+                                                horizontalArrangement = Arrangement.spacedBy(
+                                                    dimensionResource(
+                                                        id = com.intuit.sdp.R.dimen._3sdp
+                                                    )
                                                 )
-                                            )
+                                            ) {
+                                                Text(
+                                                    text = "$ ${item.amount.toString()}",
+                                                    fontFamily = poppinsFontFamily,
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    color = if (contentColor == MaterialTheme.colorScheme.onSurface) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.error,
+                                                    fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._16ssp).value.sp
+                                                )
+                                            }
+                                        }
+                                    }
+                                    if ((item.spiceLevel != null) or isMostOrdered) {
+                                        val spiceLevel = when (item.spiceLevel) {
+                                            1 -> "Mild"
+                                            2 -> "Medium"
+                                            3 -> "Spicy"
+                                            else -> ""
+                                        }
+                                        val spicyText = if (item.spiceLevel == 3) "" else "spice"
+                                        Column(
+                                            modifier = Modifier.fillMaxWidth()
                                         ) {
-                                            Text(
-                                                text = "$ ${item.amount.toString()}",
-                                                fontFamily = poppinsFontFamily,
-                                                fontWeight = FontWeight.SemiBold,
-                                                color = if (contentColor == MaterialTheme.colorScheme.onSurface) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.error,
-                                                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._16ssp).value.sp
-                                            )
-                                        }
-                                    }
-                                }
-                                if ((item.spiceLevel != null) or isMostOrdered) {
-                                    val spiceLevel = when (item.spiceLevel) {
-                                        1 -> "Mild"
-                                        2 -> "Medium"
-                                        3 -> "Spicy"
-                                        else -> ""
-                                    }
-                                    val spicyText = if (item.spiceLevel == 3) "" else "spice"
-                                    Column(
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Spacer(modifier = Modifier.height(dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)))
-                                        if (spiceLevel.isNotEmpty()) {
-                                            Text(
-                                                text = spiceLevel.plus(" $spicyText"),
-                                                modifier = Modifier
-                                                    .clip(MaterialTheme.shapes.large)
-                                                    .background(MaterialTheme.colorScheme.error)
-                                                    .padding(
-                                                        horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp),
-                                                        vertical = dimensionResource(id = com.intuit.sdp.R.dimen._3sdp)
-                                                    ),
-                                                fontFamily = poppinsFontFamily,
-                                                fontWeight = FontWeight.Normal,
-                                                color = MaterialTheme.colorScheme.onError,
-                                                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp
-                                            )
-                                        }
-                                        if (isMostOrdered) {
-                                            Text(
-                                                text = "Item of the Day",
-                                                modifier = Modifier
-                                                    .padding(vertical = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp))
-                                                    .clip(MaterialTheme.shapes.large)
-                                                    .background(MaterialTheme.colorScheme.primary)
-                                                    .padding(
-                                                        horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp),
-                                                        vertical = dimensionResource(id = com.intuit.sdp.R.dimen._3sdp)
-                                                    ),
-                                                fontFamily = poppinsFontFamily,
-                                                fontWeight = FontWeight.Normal,
-                                                color = MaterialTheme.colorScheme.onPrimary,
-                                                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp
-                                            )
+                                            Spacer(modifier = Modifier.height(dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)))
+                                            if (spiceLevel.isNotEmpty()) {
+                                                Text(
+                                                    text = spiceLevel.plus(" $spicyText"),
+                                                    modifier = Modifier
+                                                        .clip(MaterialTheme.shapes.large)
+                                                        .background(MaterialTheme.colorScheme.error)
+                                                        .padding(
+                                                            horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp),
+                                                            vertical = dimensionResource(id = com.intuit.sdp.R.dimen._3sdp)
+                                                        ),
+                                                    fontFamily = poppinsFontFamily,
+                                                    fontWeight = FontWeight.Normal,
+                                                    color = MaterialTheme.colorScheme.onError,
+                                                    fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp
+                                                )
+                                            }
+                                            if (isMostOrdered) {
+                                                Text(
+                                                    text = "Item of the Day",
+                                                    modifier = Modifier
+                                                        .padding(vertical = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp))
+                                                        .clip(MaterialTheme.shapes.large)
+                                                        .background(MaterialTheme.colorScheme.primary)
+                                                        .padding(
+                                                            horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp),
+                                                            vertical = dimensionResource(id = com.intuit.sdp.R.dimen._3sdp)
+                                                        ),
+                                                    fontFamily = poppinsFontFamily,
+                                                    fontWeight = FontWeight.Normal,
+                                                    color = MaterialTheme.colorScheme.onPrimary,
+                                                    fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -854,6 +883,9 @@ private fun CompactAssistantConversationMessagePreview() {
 
                     },
                     onItemClick = {
+
+                    },
+                    onItemLongClick = {
 
                     }
                 )

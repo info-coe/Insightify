@@ -16,8 +16,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.infomericainc.insightify.ui.composables.splash.varients.CompactSplashScreen
-import com.infomericainc.insightify.ui.composables.splash.varients.MediumSplashScreen
+import com.infomericainc.insightify.ui.composables.splash.variants.CompactSplashScreen
+import com.infomericainc.insightify.ui.composables.splash.variants.MediumSplashScreen
 import com.infomericainc.insightify.ui.theme.InsightifyTheme
 import com.infomericainc.insightify.util.CalculateWindowSize
 

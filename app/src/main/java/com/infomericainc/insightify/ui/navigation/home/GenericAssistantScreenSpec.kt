@@ -54,17 +54,16 @@ data object GenericAssistantScreenSpec : HomeSpec {
         val previousConversationUiState by assistantViewModel.previousConversationUiState.collectAsStateWithLifecycle()
         val assistantConversationUiState by assistantViewModel.conversationUiState.collectAsStateWithLifecycle()
         val deleteConversationUiState by assistantViewModel.conversationDeletionUiState.collectAsStateWithLifecycle()
-        LaunchedEffect(key1 = assistantConversationUiState) {
-            Timber
-                .tag("TEST")
-                .d(assistantConversationUiState.toString())
-        }
+        val conversationRestrictionUIState by assistantViewModel.conversationRestrictionUIState.collectAsStateWithLifecycle()
+
+
         GenericAssistantScreen(
             navController = navController,
             assistantResponseUiState,
             previousConversationUiState,
             deleteConversationUiState,
             assistantConversationUiState,
+            conversationRestrictionUIState,
             windowWidthSizeClass,
             onAssistantEvent = { assistantEvent ->
                 assistantViewModel.onEvent(

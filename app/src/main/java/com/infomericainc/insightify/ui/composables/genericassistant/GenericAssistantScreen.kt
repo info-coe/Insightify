@@ -62,8 +62,8 @@ import com.infomericainc.insightify.extension.makeToast
 import com.infomericainc.insightify.ui.components.dialog.InstfyAlertDialog
 import com.infomericainc.insightify.ui.components.dialog.InstfyProgressDialog
 import com.infomericainc.insightify.ui.components.placeholders.UnSupportedResolutionPlaceHolder
-import com.infomericainc.insightify.ui.composables.genericassistant.varients.CompactGenericAssistantScreenContent
-import com.infomericainc.insightify.ui.composables.genericassistant.varients.MediumGenericAssistantScreenContent
+import com.infomericainc.insightify.ui.composables.genericassistant.variants.CompactGenericAssistantScreenContent
+import com.infomericainc.insightify.ui.composables.genericassistant.variants.MediumGenericAssistantScreenContent
 import com.infomericainc.insightify.ui.theme.InsightifyTheme
 import com.infomericainc.insightify.ui.theme.poppinsFontFamily
 import com.infomericainc.insightify.util.CalculateWindowSize
@@ -76,6 +76,7 @@ fun GenericAssistantScreen(
     previousConversationUiState: PreviousConversationUiState,
     deletionUiState: ConversationDeletionUiState,
     assistantConversation: List<AssistantConversationModel>,
+    conversationRestrictionUIState: ConversationRestrictionUIState,
     windowWidthSizeClass: WindowWidthSizeClass,
     onAssistantEvent: (AssistantEvent) -> Unit,
 ) {
@@ -85,7 +86,7 @@ fun GenericAssistantScreen(
             param(FirebaseAnalytics.Param.SCREEN_NAME, "Assistant Screen")
             param(FirebaseAnalytics.Param.SCREEN_CLASS, "MainActivity")
         }
-        onDispose { 
+        onDispose {
 
         }
     }
@@ -104,6 +105,7 @@ fun GenericAssistantScreen(
         navController,
         sessionTitle = "Assistant",
         deletionUiState,
+        windowWidthSizeClass,
         onAssistantEvent
     ) {
         CalculateWindowSize(
@@ -115,6 +117,7 @@ fun GenericAssistantScreen(
                     assistantResponseUiState,
                     previousConversationUiState,
                     assistantConversation,
+                    conversationRestrictionUIState,
                     onAssistantEvent = onAssistantEvent
                 )
             },
@@ -124,6 +127,7 @@ fun GenericAssistantScreen(
                     navController = navController,
                     assistantResponseUiState,
                     previousConversationUiState,
+                    conversationRestrictionUIState,
                     assistantConversation,
                     onAssistantEvent = onAssistantEvent
                 )
@@ -142,6 +146,7 @@ fun GenericAssistantScreenBody(
     navController: NavController,
     sessionTitle: String,
     deletionUiState: ConversationDeletionUiState,
+    windowWidthSizeClass: WindowWidthSizeClass,
     onAssistantEvent: (AssistantEvent) -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
@@ -205,115 +210,233 @@ fun GenericAssistantScreenBody(
                 modifier = Modifier.fillMaxSize(),
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                 topBar = {
-                    TopAppBar(
-                        windowInsets = WindowInsets(
-                            top = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp),
-                            bottom = dimensionResource(id = com.intuit.sdp.R.dimen._2sdp)
-                        ),
-                        title = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(
-                                    dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)
-                                )
-                            ) {
-                                Text(
-                                    text = sessionTitle,
-                                    fontFamily = poppinsFontFamily,
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp,
-                                    modifier = Modifier
-                                        .padding(start = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp))
-                                )
-                            }
-                        },
-                        navigationIcon = {
-                            IconButton(
-                                onClick = {
-                                    navController.popBackStack()
-                                },
-                                modifier = Modifier
-                                    .padding(start = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp))
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.ArrowBack,
-                                    contentDescription = "Back",
-                                    tint = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier.size(
-                                        dimensionResource(id = com.intuit.sdp.R.dimen._23sdp)
-                                    )
-                                )
-                            }
-                        },
-                        colors = TopAppBarDefaults
-                            .topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-                            ),
-                        actions = {
-                            IconButton(
-                                onClick = { showMenu = !showMenu },
-                                modifier = Modifier
-                                    .padding(end = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp))
-                                    .size(dimensionResource(id = com.intuit.sdp.R.dimen._22sdp))
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Settings,
-                                    contentDescription = "",
-                                    tint = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier
-                                        .size(dimensionResource(id = com.intuit.sdp.R.dimen._18sdp))
-                                )
-                            }
-
-                            DropdownMenu(
-                                expanded = showMenu,
-                                onDismissRequest = { showMenu != showMenu },
-                                properties = PopupProperties(
-                                    excludeFromSystemGesture = false,
-                                    dismissOnClickOutside = true,
-                                    dismissOnBackPress = true
-                                )
-                            ) {
-                                DropdownMenuItem(
-                                    text = {
+                    CalculateWindowSize(
+                        windowWidthSizeClass = windowWidthSizeClass,
+                        compactContent = {
+                            TopAppBar(
+                                windowInsets = WindowInsets(
+                                    top = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp),
+                                    bottom = dimensionResource(id = com.intuit.sdp.R.dimen._2sdp)
+                                ),
+                                title = {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(
+                                            dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)
+                                        )
+                                    ) {
                                         Text(
-                                            text = "Clear Conversation",
+                                            text = sessionTitle,
                                             fontFamily = poppinsFontFamily,
-                                            color = MaterialTheme.colorScheme.error
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp,
+                                            modifier = Modifier
+                                                .padding(start = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp))
                                         )
-                                    },
-                                    leadingIcon = {
+                                    }
+                                },
+                                navigationIcon = {
+                                    IconButton(
+                                        onClick = {
+                                            navController.popBackStack()
+                                        },
+                                        modifier = Modifier
+                                            .padding(start = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp))
+                                    ) {
                                         Icon(
-                                            imageVector = Icons.Rounded.Clear,
-                                            contentDescription = "",
-                                            tint = MaterialTheme.colorScheme.error
+                                            imageVector = Icons.Rounded.ArrowBack,
+                                            contentDescription = "Back",
+                                            tint = MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier.size(
+                                                dimensionResource(id = com.intuit.sdp.R.dimen._23sdp)
+                                            )
                                         )
-                                    },
-                                    onClick = { showWarningDialog = true }
-                                )
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = "About Assistant",
-                                            fontFamily = poppinsFontFamily
-                                        )
-                                    },
-                                    leadingIcon = {
+                                    }
+                                },
+                                colors = TopAppBarDefaults
+                                    .topAppBarColors(
+                                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                                    ),
+                                actions = {
+                                    IconButton(
+                                        onClick = { showMenu = !showMenu },
+                                        modifier = Modifier
+                                            .padding(end = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp))
+                                            .size(dimensionResource(id = com.intuit.sdp.R.dimen._22sdp))
+                                    ) {
                                         Icon(
-                                            imageVector = Icons.Rounded.Info,
+                                            imageVector = Icons.Rounded.Settings,
                                             contentDescription = "",
+                                            tint = MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier
+                                                .size(dimensionResource(id = com.intuit.sdp.R.dimen._18sdp))
                                         )
-                                    },
-                                    trailingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Rounded.ArrowRight,
-                                            contentDescription = "",
+                                    }
+
+                                    DropdownMenu(
+                                        expanded = showMenu,
+                                        onDismissRequest = { showMenu != showMenu },
+                                        properties = PopupProperties(
+                                            excludeFromSystemGesture = false,
+                                            dismissOnClickOutside = true,
+                                            dismissOnBackPress = true
                                         )
-                                    },
-                                    onClick = { showMenu = false }
-                                )
-                            }
+                                    ) {
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(
+                                                    text = "Clear Conversation",
+                                                    fontFamily = poppinsFontFamily,
+                                                    color = MaterialTheme.colorScheme.error
+                                                )
+                                            },
+                                            leadingIcon = {
+                                                Icon(
+                                                    imageVector = Icons.Rounded.Clear,
+                                                    contentDescription = "",
+                                                    tint = MaterialTheme.colorScheme.error
+                                                )
+                                            },
+                                            onClick = { showWarningDialog = true }
+                                        )
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(
+                                                    text = "About Assistant",
+                                                    fontFamily = poppinsFontFamily
+                                                )
+                                            },
+                                            leadingIcon = {
+                                                Icon(
+                                                    imageVector = Icons.Rounded.Info,
+                                                    contentDescription = "",
+                                                )
+                                            },
+                                            trailingIcon = {
+                                                Icon(
+                                                    imageVector = Icons.Rounded.ArrowRight,
+                                                    contentDescription = "",
+                                                )
+                                            },
+                                            onClick = { showMenu = false }
+                                        )
+                                    }
+                                },
+                            )
                         },
+                        mediumContent = {
+                            TopAppBar(
+                                windowInsets = WindowInsets(
+                                    top = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp),
+                                    bottom = dimensionResource(id = com.intuit.sdp.R.dimen._2sdp)
+                                ),
+                                title = {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(
+                                            dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)
+                                        )
+                                    ) {
+                                        Text(
+                                            text = sessionTitle,
+                                            fontFamily = poppinsFontFamily,
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._10ssp).value.sp,
+                                            modifier = Modifier
+                                                .padding(start = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp))
+                                        )
+                                    }
+                                },
+                                navigationIcon = {
+                                    IconButton(
+                                        onClick = {
+                                            navController.popBackStack()
+                                        },
+                                        modifier = Modifier
+                                            .padding(start = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp))
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.ArrowBack,
+                                            contentDescription = "Back",
+                                            tint = MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier.size(
+                                                dimensionResource(id = com.intuit.sdp.R.dimen._15sdp)
+                                            )
+                                        )
+                                    }
+                                },
+                                colors = TopAppBarDefaults
+                                    .topAppBarColors(
+                                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                                    ),
+                                actions = {
+                                    IconButton(
+                                        onClick = { showMenu = !showMenu },
+                                        modifier = Modifier
+                                            .padding(end = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp))
+                                            .size(dimensionResource(id = com.intuit.sdp.R.dimen._22sdp))
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Settings,
+                                            contentDescription = "",
+                                            tint = MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier
+                                                .size(dimensionResource(id = com.intuit.sdp.R.dimen._10sdp))
+                                        )
+                                    }
+
+                                    DropdownMenu(
+                                        expanded = showMenu,
+                                        onDismissRequest = { showMenu != showMenu },
+                                        properties = PopupProperties(
+                                            excludeFromSystemGesture = false,
+                                            dismissOnClickOutside = true,
+                                            dismissOnBackPress = true
+                                        )
+                                    ) {
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(
+                                                    text = "Clear Conversation",
+                                                    fontFamily = poppinsFontFamily,
+                                                    color = MaterialTheme.colorScheme.error
+                                                )
+                                            },
+                                            leadingIcon = {
+                                                Icon(
+                                                    imageVector = Icons.Rounded.Clear,
+                                                    contentDescription = "",
+                                                    tint = MaterialTheme.colorScheme.error
+                                                )
+                                            },
+                                            onClick = { showWarningDialog = true }
+                                        )
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(
+                                                    text = "About Assistant",
+                                                    fontFamily = poppinsFontFamily
+                                                )
+                                            },
+                                            leadingIcon = {
+                                                Icon(
+                                                    imageVector = Icons.Rounded.Info,
+                                                    contentDescription = "",
+                                                )
+                                            },
+                                            trailingIcon = {
+                                                Icon(
+                                                    imageVector = Icons.Rounded.ArrowRight,
+                                                    contentDescription = "",
+                                                )
+                                            },
+                                            onClick = { showMenu = false }
+                                        )
+                                    }
+                                },
+                            )
+                        },
+                        unSupportedContent = { /*TODO*/ }
                     )
                 }
             ) {
@@ -338,7 +461,6 @@ fun GenericAssistantScreenBody(
                 ) {
                     content(it)
                 }
-
             }
         }
     }
@@ -358,6 +480,7 @@ fun MediumRecentConversationScreenPreview() {
             ),
             assistantConversation = listOf(),
             deletionUiState = ConversationDeletionUiState(),
+            conversationRestrictionUIState = ConversationRestrictionUIState(),
             windowWidthSizeClass = WindowWidthSizeClass.Medium,
             previousConversationUiState = PreviousConversationUiState(
                 isLoading = false,

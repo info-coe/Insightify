@@ -29,3 +29,7 @@ data class ConversationDeletionUiState(
     val deleted: Boolean = false,
     val error: String? = null
 )
+
+data class ConversationRestrictionUIState(
+    val isLimitReached : Boolean = false
+)

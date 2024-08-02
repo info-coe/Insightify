@@ -1,12 +1,17 @@
 package com.infomericainc.insightify.ui.composables.bottomnavigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Help
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
-import com.infomericainc.insightify.R
 import com.infomericainc.insightify.ui.navigation.Graphs
 
 data class BottomNavigationBarItem(
@@ -22,20 +27,20 @@ data class BottomNavigationBarItem(
                 BottomNavigationBarItem(
                     name = "Home",
                     route = Graphs.HOME_GRAPH,
-                    selectedIcon = ImageVector.vectorResource(R.drawable.home_filled),
-                    unSelectedIcon = ImageVector.vectorResource(R.drawable.home_outline)
+                    selectedIcon = Icons.Filled.Home,
+                    unSelectedIcon = Icons.Outlined.Home
                 ),
                 BottomNavigationBarItem(
-                    name = "Downloads",
-                    route = Graphs.DOWNLOADS_GRAPH,
-                    selectedIcon = ImageVector.vectorResource(R.drawable.downloads_filled),
-                    unSelectedIcon = ImageVector.vectorResource(R.drawable.downloads_outline),
+                    name = "Guide",
+                    route = Graphs.GUIDE_GRAPH,
+                    selectedIcon = Icons.Filled.Info,
+                    unSelectedIcon = Icons.Outlined.Info,
                 ),
                 BottomNavigationBarItem(
                     name = "Profile",
                     route = Graphs.PROFILE_GRAPH,
-                    selectedIcon = ImageVector.vectorResource(R.drawable.user),
-                    unSelectedIcon = ImageVector.vectorResource(R.drawable.user),
+                    selectedIcon = Icons.Filled.Person,
+                    unSelectedIcon = Icons.Outlined.Person,
                 ),
             )
         }

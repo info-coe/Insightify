@@ -42,7 +42,7 @@ fun MediumTypingProgressPlaceHolder(
                 .padding(top = dimensionResource(id = R.dimen._3sdp))
                 .padding(start = dimensionResource(id = R.dimen._10sdp))
                 .size(
-                    dimensionResource(id = R.dimen._30sdp)
+                    dimensionResource(id = R.dimen._25sdp)
                 )
         )
         Box(
@@ -62,9 +62,9 @@ fun MediumTypingProgressPlaceHolder(
                 modifier = Modifier
                     .padding(start = dimensionResource(id = R.dimen._5sdp), end = dimensionResource(id = R.dimen._5sdp))
                     .padding(vertical = dimensionResource(id = R.dimen._5sdp))
-                    .width(dimensionResource(id = R.dimen._40sdp))
+                    .width(dimensionResource(id = R.dimen._30sdp))
                     .height(dimensionResource(id = R.dimen._20sdp))
-                    .scale(1.4f)
+                    .scale(1.2f)
             )
         }
     }

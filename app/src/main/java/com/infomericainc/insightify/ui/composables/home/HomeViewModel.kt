@@ -5,15 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.infomericainc.insightify.db.dao.UserConfigurationDao
-import com.infomericainc.insightify.db.dao.UserMetaDataDao
 import com.infomericainc.insightify.db.dao.UserProfileDao
 import com.infomericainc.insightify.db.entites.UserProfileEntity
 import com.infomericainc.insightify.db.entites.toUserConfigurationDto
 import com.infomericainc.insightify.db.entites.toUserProfileDto
-import com.infomericainc.insightify.ui.composables.login.google_sign_in.UserMetaData
-import com.infomericainc.insightify.ui.composables.login.google_sign_in.UserMetaDataDto
-import com.infomericainc.insightify.ui.composables.login.google_sign_in.toUserMetaDataDto
-import com.infomericainc.insightify.util.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -24,7 +19,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
@@ -34,7 +28,6 @@ class HomeViewModel @Inject constructor(
     private val fireStore: FirebaseFirestore,
     private val userProfileDao: UserProfileDao,
     private val userConfigurationDao: UserConfigurationDao,
-    private val userMetaDataDao: UserMetaDataDao,
     private val firebaseCrashlytics: FirebaseCrashlytics
 ) : ViewModel() {
 
@@ -80,22 +73,6 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    private suspend fun getProfileMetaDataFromFirebase(
-        email: String,
-        userId: String
-    ): UserMetaDataDto? {
-        return withContext(Dispatchers.IO + exceptionHandler) {
-            val userMetaData = fireStore.collection(Constants.UserMetaDataPath.USERS.name)
-                .document(email)
-                .collection(Constants.UserMetaDataPath.META_DATA.name)
-                .document(userId)
-                .get()
-                .await()
-                .toObject(UserMetaData::class.java)
-            return@withContext userMetaData?.toUserMetaDataDto()
-        }
-    }
-
 
     private suspend fun fetchUserProfile(): UserProfileEntity? {
         val rowCount = withContext(Dispatchers.IO) {
@@ -132,12 +109,6 @@ class HomeViewModel @Inject constructor(
                     .firstOrNull()
             }
 
-            val userMetaDataEntity = withContext(Dispatchers.IO) {
-                userMetaDataDao
-                    .getUserMetaData()
-                    .firstOrNull()
-            }
-
             userProfileEntity.takeIf { it != null }?.let { userProfileEntity ->
                 userConfigurationEntity.takeIf { it != null }?.let { userConfigurationEntity ->
                     userProfileEntity.email.takeIf { it != null }?.let { email ->
@@ -147,18 +118,6 @@ class HomeViewModel @Inject constructor(
                                 userConfigurationDto = userConfigurationEntity.toUserConfigurationDto()
                             )
                         }
-                        userMetaDataEntity.takeIf { it != null }?.let { userMetaDataEntity ->
-                            getProfileMetaDataFromFirebase(
-                                email,
-                                userProfileEntity.userID
-                            )?.let { userMetaDataDto ->
-                                if (userMetaDataEntity.userProfileHash == userMetaDataDto.userProfileHash) {
-                                    Timber.tag("HOME_VM_ROOM").i("user meta Matched")
-                                } else {
-                                    Timber.tag("HOME_VM_ROOM").i("user meta Changed")
-                                }
-                            }
-                        } ?: throw IllegalArgumentException()
                     } ?: throw IllegalArgumentException()
                 } ?: throw IllegalArgumentException()
             } ?: throw IllegalArgumentException()

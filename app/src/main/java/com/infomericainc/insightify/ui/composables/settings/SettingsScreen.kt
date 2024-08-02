@@ -12,7 +12,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,14 +33,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.infomericainc.insightify.ui.components.placeholders.UnSupportedResolutionPlaceHolder
-import com.infomericainc.insightify.ui.composables.settings.varients.CompactSettingsScreen
-import com.infomericainc.insightify.ui.composables.settings.varients.MediumSettingsScreen
+import com.infomericainc.insightify.ui.composables.settings.variants.CompactSettingsScreen
+import com.infomericainc.insightify.ui.composables.settings.variants.MediumSettingsScreen
 import com.infomericainc.insightify.ui.theme.InsightifyTheme
 import com.infomericainc.insightify.ui.theme.poppinsFontFamily
 import com.infomericainc.insightify.util.CalculateWindowSize
@@ -94,57 +91,26 @@ fun SettingsScreenBody(
             modifier = Modifier.fillMaxSize(),
             containerColor = MaterialTheme.colorScheme.surface,
             topBar = {
-                if (isCompact) {
-                    LargeTopAppBar(
-                        title = {
-                            Text(
-                                text = "Settings",
-                                fontFamily = poppinsFontFamily,
-                            )
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = { navController.popBackStack() }) {
-                                Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = "")
-                            }
-                        },
-                        colors = TopAppBarDefaults
-                            .largeTopAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                            ),
-                        windowInsets = WindowInsets(
-                            left = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)
+                LargeTopAppBar(
+                    title = {
+                        Text(
+                            text = "Settings",
+                            fontFamily = poppinsFontFamily,
                         )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = "")
+                        }
+                    },
+                    colors = TopAppBarDefaults
+                        .largeTopAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                        ),
+                    windowInsets = WindowInsets(
+                        left = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)
                     )
-                } else {
-                    LargeTopAppBar(
-                        title = {
-                            Text(
-                                text = "Settings",
-                                fontFamily = poppinsFontFamily,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp
-                            )
-                        },
-                        navigationIcon = {
-                            IconButton(
-                                onClick = { navController.popBackStack() }) {
-                                Icon(
-                                    imageVector = Icons.Rounded.ArrowBack,
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .size(dimensionResource(id = com.intuit.sdp.R.dimen._18sdp))
-                                )
-                            }
-                        },
-                        colors = TopAppBarDefaults
-                            .largeTopAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                            ),
-                        windowInsets = WindowInsets(
-                            left = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)
-                        )
-                    )
-                }
+                )
             }
         ) {
             var isRecomposed by remember {
