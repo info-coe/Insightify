@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.sp
 object Constants {
 
 
-    const val VERSION = "Alpha-v1.0.5"
+    const val VERSION = "Alpha-v1.0.6"
 
     const val GPT_MODEL = "gpt-4"
 
