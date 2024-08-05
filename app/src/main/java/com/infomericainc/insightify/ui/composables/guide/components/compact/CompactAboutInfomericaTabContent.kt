@@ -65,6 +65,7 @@ fun CompactAboutInfomericaTabContent(
                 contentDescription = "",
                 modifier = Modifier
                     .size(dimensionResource(id = com.intuit.sdp.R.dimen._180sdp))
+                    .animateItem()
             )
         }
         item {
@@ -76,7 +77,8 @@ fun CompactAboutInfomericaTabContent(
                     .padding(
                         horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp)
                     )
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .animateItem(),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._16ssp).value.sp,
@@ -106,7 +108,8 @@ fun CompactAboutInfomericaTabContent(
                         top = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp)
                     )
                     .fillMaxWidth()
-                    .alpha(.6f),
+                    .alpha(.6f)
+                    .animateItem(),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Medium,
                 fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp,
@@ -125,6 +128,7 @@ fun CompactAboutInfomericaTabContent(
                     )
                     .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                     .padding(vertical = dimensionResource(id = com.intuit.sdp.R.dimen._15sdp))
+                    .animateItem()
             ) {
                 item {
                     Image(
@@ -201,7 +205,8 @@ fun CompactAboutInfomericaTabContent(
                     .padding(
                         top = dimensionResource(id = com.intuit.sdp.R.dimen._20sdp)
                     )
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .animateItem(),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp,
@@ -221,7 +226,8 @@ fun CompactAboutInfomericaTabContent(
                         top = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)
                     )
                     .fillMaxWidth()
-                    .alpha(.8f),
+                    .alpha(.8f)
+                    .animateItem(),
                 textAlign = TextAlign.Justify,
                 fontWeight = FontWeight.Normal,
                 fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp,
@@ -239,7 +245,8 @@ fun CompactAboutInfomericaTabContent(
                     .padding(
                         top = dimensionResource(id = com.intuit.sdp.R.dimen._10sdp)
                     )
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .animateItem(),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._14ssp).value.sp,
@@ -257,7 +264,8 @@ fun CompactAboutInfomericaTabContent(
                     .padding(
                         top = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)
                     )
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .animateItem(),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Normal,
                 fontSize = dimensionResource(id = com.intuit.ssp.R.dimen._12ssp).value.sp,
@@ -284,6 +292,7 @@ fun CompactAboutInfomericaTabContent(
                         top = dimensionResource(id = com.intuit.sdp.R.dimen._15sdp)
                     )
                     .fillMaxWidth()
+                    .animateItem()
             ) {
                 Column(
                     modifier = Modifier

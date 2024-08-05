@@ -98,6 +98,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.infomericainc.insightify.R
 import com.infomericainc.insightify.extension.makeToast
+import com.infomericainc.insightify.manager.PreferencesManager
 import com.infomericainc.insightify.ui.components.dialog.InstfyProgressDialog
 import com.infomericainc.insightify.ui.composables.genericassistant.AssistantConversationModel
 import com.infomericainc.insightify.ui.composables.genericassistant.AssistantEvent
@@ -114,6 +115,7 @@ import com.infomericainc.insightify.ui.composables.genericassistant.menu.Item
 import com.infomericainc.insightify.ui.theme.InsightifyTheme
 import com.infomericainc.insightify.ui.theme.poppinsFontFamily
 import com.infomericainc.insightify.util.CompactThemedPreviewProvider
+import com.infomericainc.insightify.util.Constants
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -157,13 +159,15 @@ fun CompactGenericAssistantScreenContent(
         mutableStateOf(false)
     }
 
-
     val permissionState =
         rememberPermissionState(permission = Manifest.permission.RECORD_AUDIO)
 
-
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+
+    val preferencesManager by remember {
+        mutableStateOf(PreferencesManager(context))
+    }
 
     LaunchedEffect(key1 = Unit) {
         //Adding little bit of delay for Performance
@@ -180,8 +184,15 @@ fun CompactGenericAssistantScreenContent(
         isConversationLimitReached = conversationRestrictionUIState.isLimitReached
     }
 
-
-
+    LaunchedEffect(Unit) {
+        if (preferencesManager.getBoolean(
+                Constants.IS_CONVERSATION_LIMIT_REACHED,
+                defaultValue = false
+            )
+        ) {
+            isConversationLimitReached = true
+        }
+    }
 
     DisposableEffect(key1 = Unit) {
         Timber
@@ -233,7 +244,7 @@ fun CompactGenericAssistantScreenContent(
                     horizontal = dimensionResource(id = com.intuit.sdp.R.dimen._5sdp)
                 )
                 .fillMaxHeight(.9f),
-            ) {
+        ) {
             CompactRestrictionBottomSheetContent(
                 navController = navController
             )

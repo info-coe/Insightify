@@ -59,6 +59,7 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.logEvent
 import com.google.firebase.ktx.Firebase
 import com.infomericainc.insightify.extension.makeToast
+import com.infomericainc.insightify.manager.PreferencesManager
 import com.infomericainc.insightify.ui.components.dialog.InstfyAlertDialog
 import com.infomericainc.insightify.ui.components.dialog.InstfyProgressDialog
 import com.infomericainc.insightify.ui.components.placeholders.UnSupportedResolutionPlaceHolder
@@ -67,6 +68,7 @@ import com.infomericainc.insightify.ui.composables.genericassistant.variants.Med
 import com.infomericainc.insightify.ui.theme.InsightifyTheme
 import com.infomericainc.insightify.ui.theme.poppinsFontFamily
 import com.infomericainc.insightify.util.CalculateWindowSize
+import com.infomericainc.insightify.util.Constants
 import com.infomericainc.insightify.util.MediumThemedPreviewProvider
 
 @Composable
@@ -80,7 +82,6 @@ fun GenericAssistantScreen(
     windowWidthSizeClass: WindowWidthSizeClass,
     onAssistantEvent: (AssistantEvent) -> Unit,
 ) {
-
     DisposableEffect(key1 = Unit) {
         Firebase.analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
             param(FirebaseAnalytics.Param.SCREEN_NAME, "Assistant Screen")
@@ -92,11 +93,9 @@ fun GenericAssistantScreen(
     }
     val systemUiController = rememberSystemUiController()
     val isInDarkMode = isSystemInDarkTheme()
+    val context = LocalContext.current
+
     systemUiController.setStatusBarColor(
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-        darkIcons = !isInDarkMode
-    )
-    systemUiController.setNavigationBarColor(
         color = MaterialTheme.colorScheme.surfaceContainerLow,
         darkIcons = !isInDarkMode
     )

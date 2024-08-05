@@ -115,6 +115,11 @@ class AssistantViewModel @Inject constructor(
                     mutableConversationRestrictionUIState.update { uiState ->
                         uiState.copy(isLimitReached = true)
                     }
+                    preferencesManager
+                        .saveBoolean(
+                            Constants.IS_CONVERSATION_LIMIT_REACHED,
+                            true
+                        )
                 }
             }
         }
@@ -343,6 +348,11 @@ class AssistantViewModel @Inject constructor(
                                             mutableConversationRestrictionUIState.update {
                                                 it.copy(isLimitReached = true)
                                             }
+                                            preferencesManager
+                                                .saveBoolean(
+                                                    Constants.IS_CONVERSATION_LIMIT_REACHED,
+                                                    true
+                                                )
                                         }
                                     }
                             }

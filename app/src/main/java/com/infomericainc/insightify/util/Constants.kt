@@ -16,6 +16,7 @@ object Constants {
     const val APPLICATION_PREFERENCES = "application_preferences"
     const val IS_USER_LOGGED_IN = "logged_in"
     const val TABLE_NUMBER = "TABLE_NUMBER"
+    const val IS_CONVERSATION_LIMIT_REACHED = "IS_CONVERSATION_LIMIT_REACHED"
 
     const val BASE_URL = "https://api.stripe.com/v1/"
 

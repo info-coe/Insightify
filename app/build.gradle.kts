@@ -18,8 +18,8 @@ android {
         applicationId = "com.infomericainc.insightify"
         minSdk = 24
         targetSdk = 34
-        versionCode = 4
-        versionName = "v1.0.4"
+        versionCode = 6
+        versionName = "v1.0.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
